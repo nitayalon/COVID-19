@@ -1,0 +1,72 @@
+---
+title: "Import COVID19 data"
+author: "Nitay Alon"
+date: "May 3, 2020"
+output: html_document
+---
+
+```{r load libraries, warning=FALSE}
+library(dplyr)
+library(tidyverse)
+```
+
+```{r load data sets}
+global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
+global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
+```
+
+```{r load us data sets}
+usa_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv")
+usa_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv")
+```
+
+
+```{r states names}
+global_confirmed_recovered %>% 
+  select(`Country/Region`) %>% 
+  distinct()
+```
+
+
+```{r extract italy data}
+state = 'Italy'
+confirmed_cases <- global_confirmed_cases %>% 
+  select(-`Province/State`, -Lat, -Long) %>% 
+  group_by(`Country/Region`) %>% 
+  filter(`Country/Region` == state) %>% 
+  summarise_all(list(total = sum))
+confirmed_deaths <- global_confirmed_deaths %>% 
+  select(-`Province/State`, -Lat, -Long) %>% 
+  group_by(`Country/Region`) %>% 
+  filter(`Country/Region` == state) %>% 
+  summarise_all(list(total = sum))
+confirmed_recovered <- global_confirmed_recovered %>% 
+  select(-`Province/State`, -Lat, -Long) %>% 
+  group_by(`Country/Region`) %>% 
+  filter(`Country/Region` == state) %>% 
+  summarise_all(list(total = sum))
+```
+
+```{r join italy data}
+full_data_for_export <- full_join(
+  full_join(confirmed_cases %>%
+  gather(var, val, 2:ncol(confirmed_cases)) %>%
+  select(var, val),
+  confirmed_deaths %>%
+  gather(var, val, 2:ncol(confirmed_cases)) %>%
+  select(var, val),
+  by = "var",
+  suffix = c('.confirmed_cases','.confirmed_deaths')),
+  confirmed_recovered %>% 
+    gather(var, val, 2:ncol(confirmed_cases)) %>%
+    select(var, val),
+  by = "var"
+) 
+```
+
+```{r export to csv}
+path_name = sprintf('/home/nitay/COVID-19/csse_covid_19_data/nation_wide_data/%s_data.csv',state)
+write_csv(x = full_data_for_export, path = path_name)
+```
+

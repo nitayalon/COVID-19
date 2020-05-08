@@ -1,0 +1,195 @@
+---
+title: "Import script from MatLab"
+author: "Nitay Alon"
+date: "May 4, 2020"
+output: html_document
+---
+
+Original script:
+X = total cases
+VW = recovered + death
+Y = X - VW
+```{r environment parameters}
+beta0=1*10^-5
+gamma0=15*10^-4
+eta0=20*10^-4
+K0=1000
+n=1000
+res=.005
+del=1/100
+
+real_data <- full_data_for_export %>% 
+  mutate(VW = val.confirmed_deaths + val) %>% 
+  select(X = val.confirmed_cases, V = val.confirmed_deaths, W = val)
+
+XD=real_data$X[52:nrow(real_data)]
+WD = real_data$V[52:nrow(real_data)]
+VD= real_data$W[52:nrow(real_data)]
+simu = T
+OBJ = OBJB = LOGL = gammahat = betahat = asympt = c()
+VAR1 = T0 = T1 = matrix(nrow = n, ncol = 2)
+```
+
+```{r SIMULATION The data is simulated as X W V and then Y=X-W-V}
+beta=beta0
+gamma=gamma0
+eta=eta0
+
+x=rep(0,500*n)
+y = w = v = wv = x
+X1=rep(0,n)
+V1=X1
+Y1=X1
+W1=X1
+X3=X1
+V3=V1
+W3=W1
+```
+
+```{r setting arbitrary initial values}
+x[1]=XD[1]
+v[1]=VD[1]
+w[1]=WD[1]
+y[1]=max(0,x[1]-w[1]-v[1])
+```
+
+```{r writing numerically the "solution" to the PDE}
+if(simu){
+  for(i in 2:length(x)){
+    x[i]=x[i-1]+beta*y[i-1]*max(0,K0-x[i-1])*del
+    vw[i]=vw[i-1]+gamma*y[i-1]*del
+    y[i]=max(0,x[i]-vw[i])
+  }
+}
+```
+
+```{r}
+X1=x[100*(1:n)]
+V1=v[100*(1:n)]
+W1=w[100*(1:n)]
+  
+X2=X1*(1+rnorm(n)*res)
+V2=V1*(1+rnorm(n)*res)
+W2=W1*(1+rnorm(n)*res)
+
+X3[1]=X2[1]
+V3[1]=V2[1]
+W3[1]=W2[1]
+
+for (i in 2:n){
+      X3[i]=max(X3[i-1],X2[i])
+      V3[i]=max(V3[i-1],V2[i])
+      W3[i]=max(W3[i-1],W2[i])
+}
+X=X3
+W=W3
+V=V3
+Y=pmax(0,X-W-V)
+VW=V+W
+```
+
+
+```{r mid-value infected}
+Ym=(Y[1:(length(Y)-1)]+Y[2:length(Y)])/2
+Ym=rbind(Ym , Y[length(Y)])
+
+Xm=(X[1:(length(X)-1)]+X[2:length(X)])/2
+Xm=rbind(Xm , X[length(X)])
+
+VW=V+W
+
+x[1:100]=X[1]
+y[1:100]=Y[1]
+w[1:100]=W[1]
+v[1:100]=V[1]
+vw[1:100]=V[1]+W[1]
+```
+
+Small case indicate finer resolution of each variable
+```{r Initial values - smaller resolution}
+NNN=1e4
+# Skip this loop
+for (hhh in 1:120){
+  # Set another value for K
+  K=max(X)+hhh*NNN
+  asympt[hhh]=K 
+  betahat[hhh]=(X[length(X)]-X[1])/sum(sqrt(Ym-Ym[1])*(K-(Xm-Xm[1])))
+  beta=betahat[hhh]
+  gammahat[hhh]=(VW[length(VW)]-VW[1])/sum(Ym-Ym[1])
+  gamma=gammahat[hhh]
+  for(jjj in 1:5){
+   for (i in seq(101,500*n)){
+      x[i]=x[i-1]+beta*sqrt(y[i-1])*max(0,K-x[i-1])*del
+      vw[i]=vw[i-1]+gamma*y[i-1]*del
+      y[i]=max(0,x[i]-vw[i])
+   }
+    for(i in 1:n){
+  	    T1[i,1]=sum(x<=X[i]) 
+  	    T1[i,2]=sum(vw<=VW[i]) 
+    }
+  	T1=T1*del
+  	beta=beta*T1[n,1]/n
+  	gamma=gamma*T1[n,2]/n
+  	betahat[hhh]=beta
+  	gammahat[hhh]=gamma
+  }
+  for(i in seq(101,500*n)){
+    x[i]=x[i-1]+beta*sqrt(y[i-1])*max(0,K-x[i-1])*del 
+    vw[i]=vw[i-1]+gamma*y[i-1]*del 
+    y[i]=max(0,x[i]-vw[i]) 
+  }
+  for(i in 1:n){
+  	    T0[i,1]=sum(x<=X[i]) 
+  	    T0[i,2]=sum(vw<=VW[i]) 
+  }
+  T0=T0*del
+  TT=diff(T0)-1
+  COV=t(TT)%*%TT/(n-1)
+  AD=beta*Ym*max(K-Xm,0)
+  BD=gamma*Ym
+  OBJ1=sum(log(AD)+log(BD)) 
+  OBJ[hhh]=OBJ1+(n/2)*log(det(COV))  
+  LOGL[hhh]=log(det(COV))
+  VAR1[hhh,]=sqrt(mean(diag(COV)))
+  OBJB[hhh]=sum(log(AD))+(n/2)*log(COV[1,1])
+}
+```
+
+
+```{r}
+vv=which.min(OBJB)
+beta=betahat[vv]
+gamma=gammahat[vv]
+K=asympt[vv]
+```
+
+```{r}
+for(i in seq(101,500*n)){
+	x[i]=x[i-1]+beta*sqrt(y[i-1])*max(0,K-x[i-1])*del
+
+	vw[i]=vw[i-1]+gamma*y[i-1]*del
+
+	w[i]=w[i-1]+eta*y[i-1]*del
+
+	y[i]=max(0,x[i]-vw[i])
+}
+
+```
+
+```{r}
+for(i in 1:n){
+    T1[i,1]=sum(x<=X[i])
+    T1[i,2]=sum(vw<=VW[i])
+}
+T1=T1*del
+TT=diff(T1)-1
+COV=t(TT)%*%TT/(n-1)
+AD=beta*Ym*max(K-Xm,0)
+BD=gamma*Ym
+```
+```{r}
+plot(x[(1:100) *100], col = 'red')
+plot(XD,type = 'l', col = 'blue')
+```
+
+
