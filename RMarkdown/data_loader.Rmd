@@ -10,7 +10,7 @@ library(dplyr)
 library(tidyverse)
 ```
 
-```{r load data sets}
+```{r load data sets, warnings = FALSE}
 global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
@@ -25,12 +25,13 @@ usa_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_c
 ```{r states names}
 global_confirmed_recovered %>% 
   select(`Country/Region`) %>% 
-  distinct()
+  distinct() %>% 
+  str_subset('United')
 ```
 
 
-```{r extract italy data}
-state = 'Italy'
+```{r extract state data}
+state = 'Germany'
 confirmed_cases <- global_confirmed_cases %>% 
   select(-`Province/State`, -Lat, -Long) %>% 
   group_by(`Country/Region`) %>% 
@@ -48,7 +49,7 @@ confirmed_recovered <- global_confirmed_recovered %>%
   summarise_all(list(total = sum))
 ```
 
-```{r join italy data}
+```{r join state data}
 full_data_for_export <- full_join(
   full_join(confirmed_cases %>%
   gather(var, val, 2:ncol(confirmed_cases)) %>%

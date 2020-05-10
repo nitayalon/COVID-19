@@ -9,59 +9,55 @@ Original script:
 X = total cases
 VW = recovered + death
 Y = X - VW
-```{r environment parameters}
-beta0=1*10^-5
-gamma0=15*10^-4
-eta0=20*10^-4
-K0=1000
-n=1000
-res=.005
-del=1/100
-
-real_data <- full_data_for_export %>% 
-  mutate(VW = val.confirmed_deaths + val) %>% 
-  select(X = val.confirmed_cases, V = val.confirmed_deaths, W = val)
-
-XD=real_data$X[52:nrow(real_data)]
-WD = real_data$V[52:nrow(real_data)]
-VD= real_data$W[52:nrow(real_data)]
-simu = T
-OBJ = OBJB = LOGL = gammahat = betahat = asympt = c()
-VAR1 = T0 = T1 = matrix(nrow = n, ncol = 2)
+```{r load libraries, warning=FALSE}
+library(dplyr)
+library(tidyverse)
+library(magrittr)
+library(ggplot2)
 ```
 
-```{r SIMULATION The data is simulated as X W V and then Y=X-W-V}
-beta=beta0
-gamma=gamma0
-eta=eta0
 
-x=rep(0,500*n)
-y = w = v = wv = x
-X1=rep(0,n)
-V1=X1
-Y1=X1
-W1=X1
-X3=X1
-V3=V1
-W3=W1
+```{r environment parameters}
+beta_init = 1*10^-5
+gamma_init = 15*10^-4
+n = 1000
+K_init=1000
+res=.005
+del=1/100
+```
+
+```{r load data and conver to matrices}
+real_data <- full_data_for_export %>% 
+  mutate(VW = val.confirmed_deaths + val) %>% 
+  select(X = val.confirmed_cases, V = val.confirmed_deaths, W = val) %>% 
+  as.matrix()
+XD = c(10)
+WD = c(3)
+VD = c(3)
+x = w = v = y = wv = rep(0,n)
+X1 = V1 = Y1 = W1 = X3 = V3 = W3 = rep(0,n)
+beta = beta_init
+gamma = gamma_init
+simu = T
 ```
 
 ```{r setting arbitrary initial values}
-x[1]=XD[1]
-v[1]=VD[1]
-w[1]=WD[1]
-y[1]=max(0,x[1]-w[1]-v[1])
+x[1] = XD
+w[1] = WD
+v[1] = VD
+y[1] = max(0, x[1] - w[1] - v[1])
 ```
 
-```{r writing numerically the "solution" to the PDE}
+```{r writing numerically the solution to the PDE}
 if(simu){
-  for(i in 2:length(x)){
-    x[i]=x[i-1]+beta*y[i-1]*max(0,K0-x[i-1])*del
+  for(i in seq(2,500*n)){
+    x[i]=x[i-1]+beta*y[i-1]*max(0,K_init-x[i-1])*del
     vw[i]=vw[i-1]+gamma*y[i-1]*del
     y[i]=max(0,x[i]-vw[i])
   }
 }
 ```
+
 
 ```{r}
 X1=x[100*(1:n)]

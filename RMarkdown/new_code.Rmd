@@ -6,80 +6,225 @@ output: html_document
 ---
 
 ```{r}
-#Decreasing fit to the ratio of deadincrease to
-
-#deadincrease+recoveredincrease
-
-#input country data QQQ
-real_data <- full_data_for_export %>% 
-  mutate(VW = val.confirmed_deaths + val) %>% 
-  select(X = val.confirmed_cases, V = val.confirmed_deaths, W = val)
-
-nq=nrow(real_data)
-
-#Making sure data is monotone
-real_data_matrix <- as.matrix(real_data)
-QQ2 = matrix(0,ncol = ncol(real_data_matrix), nrow = nrow(real_data_matrix))
-QQ2[1,]=real_data_matrix[1,]
-
-take_max <- function(new_data, old_data)
-{
-  n <- length(old_data)
-  results <- c()
-  for(i in 1:n)
-  {
-    results[i] <- max(c(new_data[i], old_data[i-1]))  
-  }
-  return(results)
-}
-
-QQ3 <- sapply(1:3,function(i){
-  take_max(QQ2[,i],real_data_matrix[,i])
-})
-
-#Time scale
-QQ1=diff(QQ3)
-
-T0=(1:nq-1) #MSQ=10^10
-MSQ = 22
-# Fitting a sigmoidal function 1/(1+exp(bb*(T-t0))) to the proportion of dead. Two parameters bb and t0
-sumsq <- matrix(0, 100, 100)
-bb <- 1.5
-t0 <- 2.5
-for(i in 1:100){
-  for(j in 1:100){
-        t0=-100+2*i
-        bb=j/1000
-        sumsq[i,j]=sum(((QQ1[,2]+QQ1[,3])/(1+exp(bb*(T0-t0)))-QQ1[,2])^2/(100+QQ1[,2]+QQ1[,3]))
-        if (sumsq[i,j]<MSQ){
-          MSQ=sumsq[i,j]  
-          i0=i
-          j0=j
-          t1=t0
-          bb1=bb
-        }
-  }
-}
-  
-
-
-
-%Displaying the results with the fitted parameters bb1 and t1
-
-disp([i0 j0 t1])
-
-disp(bb1)
-
-clear figure(1)
-
-QQ3=QQ2
-
-for i=2:nq
-
-    QQ3(i,2)=QQ3(i-1,2)+(QQ1(i-1,2)+QQ1(i-1,3))/(1+exp(bb1*(i-1-t1)))
-
-    QQ3(i,3)=QQ3(i-1,3)+(QQ1(i-1,2)+QQ1(i-1,3))*(1-1/(1+exp(bb1*(i-1-t1))))
-
-end
+library(beepr)
+covid_data <- 
+full_data_for_export %>% 
+  select(-var) %>% 
+  as.matrix()
+n = nrow(covid_data)
+X = covid_data[,1]
+V = covid_data[,2]
+W = covid_data[,3]
+VW = V+W
+Y = X - VW
+ind <- 56
+X = X[ind:n]
+V = V[ind:n]
+W = W[ind:n]
+VW = V+W
+Y = X - VW
+# input: X, V, W, 
+# VW = V + W
+# Y = X - VW
+# n = lnength(X)
 ```
 
+```{r validation plots}
+plot(X, type = 'l', col = 'blue')
+lines(Y, col = 'red')
+lines(VW, col = 'green')
+```
+
+
+```{r comute the middle point for each data point}
+n <- length(X)
+Y_middle=(Y[1:(n-1)]+Y[2:n])/2
+Y_middle=c(Y_middle, Y[n])
+X_middle=(X[1:(n-1)]+X[2:n])/2
+X_middle=c(X_middle, X[n])
+```
+
+```{r validation plot}
+plot(Y_middle, type = 'l', col = 'blue')
+lines(Y_middle, col = 'red')
+
+plot(X_middle, type = 'l', col = 'blue')
+lines(X, col = 'red')
+```
+
+
+```{r devide the day into binns}
+partition_parameter = 100
+del = 1/partition_parameter # dt
+# Set the first 100 obs to same value - can be 52,53
+x = y = vw = c()
+x[1:partition_parameter]=X[1]
+y[1:partition_parameter]=Y[1]
+vw[1:partition_parameter]=VW[1]
+gammahat = betahat = asympt = c()
+LOGL = VAR1 = OBJ = OBJB = c()
+T_final = T1 = matrix(0, ncol = 2, nrow = n)
+```
+
+
+
+
+```{r}
+# NNN=1000 #What is the grid of K
+#' One possibily is to take the maximal value of X, K = 1.25 * X_max
+NNN=floor(max(X) / 100) #What is the grid of K
+hhh_upper_limit = 400
+number_of_inner_loops = 100
+calibration_loops = 20
+# 25 / 100
+for(hhh in 1:hhh_upper_limit)
+  {
+    K=max(X) + hhh * NNN
+    asympt[hhh] = K
+
+    betahat[hhh] = (X[n]-X[1])/sum(max(1,sqrt(Y_middle)-sqrt(Y_middle[1]))*(K-(X_middle-X_middle[1])))
+    beta=betahat[hhh]
+
+    gammahat[hhh] = (VW[n]-VW[1])/sum(max(1,Y_middle-Y_middle[1]))
+    gamma=gammahat[hhh]
+    
+    for(jjj in 1:calibration_loops)
+    {
+      for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
+      {
+        # infection rate growth
+        x[i]=x[i-1]+beta*sqrt(y[i-1])*max(0,K-x[i-1])*del
+        # removed rate
+        vw[i]=vw[i-1]+gamma*y[i-1]*del
+        # Current ills
+        y[i]=max(0,x[i]-vw[i])
+      }
+      for(i in 1:n)
+      {
+        # random time transformation
+        # The events where the pde solution equals to the emphirical values
+        T1[i,1]=sum(x<=X[i])
+        T1[i,2]=sum(vw<=VW[i])
+      }
+      T1=T1*del
+      beta=beta*T1[n,1]/n
+      gamma=gamma*T1[n,2]/n
+      betahat[hhh]=beta
+      gammahat[hhh]=gamma
+      # Check convergence of T1 should by NNN
+    }
+  # # Possibly redundent
+  #   for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
+  #     {
+  #       x[i]=x[i-1]+beta*sqrt(y[i-1])*max(0,K-x[i-1])*del
+  #   
+  #       vw[i]=vw[i-1]+gamma*y[i-1]*del
+  #   
+  #       y[i]=max(0,x[i]-vw[i])
+  #   }
+  #   for(i in 1:n){
+  #       T_final[i,1]=sum(x<=X[i])
+  #       T_final[i,2]=sum(vw<=VW[i])
+  #   }
+  # T_final=T_final*del
+  T_final=T1
+  TT=diff(T_final)-1
+  
+  COV=t(TT)%*%TT/(n-1)
+  # The solution deviratives - Jacobi matrix
+  AD=beta*sqrt(Y_middle)*max(K-X_middle,0)
+  BD=gamma*Y_middle
+  
+  OBJ1=sum(log(AD)+log(BD)) #single figure - denom
+  OBJ[hhh]=OBJ1+(n/2)*log(det(COV)) # likelihood when we use to BM's
+  LOGL[hhh]=log(det(COV))
+  VAR1[hhh]=mean(diag(COV))
+  OBJB[hhh]=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
+}
+beep('wilhelm')
+# take the 5 points centered at K_max - repartiton the interval and compute a finer loop
+```
+
+```{r}
+plot(OBJB, type = 'l')
+plot(OBJ, type = 'l')
+```
+
+
+Next we minimize OBJ and OBJB to find the optimal value of hhh
+When we compute the CI we should consider the dimension of the data (Chi2)
+```{r minimizing OBJ and OBJB}
+uuB=min(OBJB)
+vvB=which.min(OBJB)
+beta=betahat[vvB]
+gamma=gammahat[vvB]
+K=asympt[vvB]
+
+uuA=min(OBJ)
+vvA=which.min(OBJ)
+betaA=betahat[vvA]
+gammaA=gammahat[vvA]
+KA=asympt[vvA]
+
+matrA = matrix(c(rep(1,11), t((vvA-5):(vvA+5)), t((vvA-5):(vvA+5))^2), nrow = 11);
+cofsA = matrA / OBJ[(vvA-5):(vvA+5)]
+wwA=-cofsA[2]/(2*cofsA[3])
+FISHERA=2*cofsA[3]/NNN^2
+KA=max(X)+wwA*NNN
+
+matrB=matrix(c(rep(1,11), t((vvB-5):(vvB+5)), t((vvB-5):(vvB+5))^2), nrow = 11);
+cofsB=matrB / OBJB[(vvB-5):(vvB+5)]
+wwB=-cofsB[2]/(2*cofsB[3])
+FISHERB=2*cofsB[3]/NNN^2
+KB=max(X)+wwB*NNN
+# Here we have to decide id we only compute for X or ofr (X,VW)
+# if we keep past iteration - this is redundent
+
+# beta = 1.227*10^-4
+# gamma = 2.58187*10^-2
+for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
+{
+  x[i]=x[i-1]+beta*sqrt(y[i-1])*max(0,K-x[i-1])*del
+  
+  vw[i]=vw[i-1]+gamma*y[i-1]*del
+  
+  y[i]=max(0,x[i]-vw[i])
+}
+for(i in 1:n)
+{
+    T1[i,1]=sum(x<=X[i])
+    T1[i,2]=sum(vw<=VW[i])
+}
+T1=T1*del
+TT=diff(T1)-1
+COV=t(TT)%*%TT/(n-1)
+AD=beta*Y_middle*max(K-X_middle,0)
+BD=gamma*Y_middle
+print(c(beta, gamma, beta^(2/3)/gamma))
+```
+beta should be $1.227*10^-4$  and gamma should be $2.58187*10^-2$
+
+```{r validation plots}
+plot(log(X), type = 'l', col = 'blue')
+lines(log(x[(1:length(x)) %% 100 == 0]), col = 'red')
+
+plot(log(Y), type = 'l', col = 'blue')
+lines(log(y[(1:length(y)) %% 100 == 0]), col = 'red')
+
+plot(log(VW), type = 'l', col = 'blue')
+lines(log(vw[(1:length(vw)) %% 100 == 0]), col = 'red')
+```
+```{r model plots}
+plot(log(x[(1:length(x)) %% 100 == 0]), type = 'l', col = 'blue', ylab = 'Log cases', xlab = 'Time')
+lines(log(y[(1:length(x)) %% 100 == 0]), col = 'red')
+lines(log(vw[(1:length(x)) %% 100 == 0]), col = 'green')
+```
+
+ Take the argmin and search for the first value where the llk increase by 10 (two-sided)
+
+The entire code is wrapped in an external loop to test the starting day - decided by var1
+Search for min(var1) * 1.5 and find, before the argmin 
+Run only on days starting with x > 100 
+
+Report $\gamma$, $\beta$, $K$, for each day and see that the starting day make no difference
+$\beta ^ \frac{2}{3}$

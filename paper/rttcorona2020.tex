@@ -1,0 +1,151 @@
+%\documentclass[12p]{article}
+%\usepackage{a4paper,makeidx}
+%\usepackage[dvips]{graphics}
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{multirow}
+
+%\documentclass[smallextended]{svjour3}
+%\usepackage[dvips]{graphicx}
+%\usepackage{subfig}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\righthyphenmin=55
+\newlength{\gnat}
+\newlength{\figheight}
+\newlength{\figwidth}
+\setlength{\textwidth}{6in}
+\setlength{\evensidemargin}{0.2in}
+\setlength{\oddsidemargin}{0.2in}
+\setlength{\topmargin}{0.0in}
+\setlength{\textheight}{9in}
+\setlength{\headsep}{10pt}
+\setlength{\columnsep}{0.375in}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{claim}{Claim}
+
+\def\IR{\Bbb R}
+\def\tF{{\tilde F}}
+\def\tG{{\tilde G}}
+\def\tE{{\tilde E}}
+\def\hF{{\hat F}}
+\def\hG{{\hat G}}
+\def\hE{{\hat E}}
+\def\oF{{\overline{F}}}
+\def\oG{{\overline{G}}}
+\def\CC{{\cal C}}
+\def\uF{{\underline{F}}}
+\def\uG{{\underline{G}}}
+\def\oC{{\overline{C}}}
+\def\uC{{\underline{C}}}
+\baselineskip= 20pt
+%\input{tcilatex}
+
+\begin{document}
+
+\title {Random time transformation analysis of the Covid19 Pandemic 2020}
+
+\author {
+Nitay Alon
+\\
+{\em E-mail: \tt{nitay.alon@gmail.com}} \\
+Isaac Meilijson
+\\
+{\em E-mail: \tt{isaco@tauex.tau.ac.il}} \\
+{\em School of Mathematical Sciences} \\
+{\em Raymond and Beverly Sackler Faculty of Exact Sciences} \\
+{\em Tel-Aviv University, 6997801 Tel-Aviv, Israel} \\
+}
+
+%\titlerunning{Adjustment and Sharpe}
+%\authorrunning{Isaac Meilijson}
+
+\maketitle
+
+\pagenumbering{arabic}
+
+\begin{abstract}
+
+
+%\keywords{
+%\noindent{\bf JEL Classification Numbers:}
+%
+\end{abstract}
+
+%\vspace{1cm}
+
+%\noindent \hrulefill \hspace{12cm}
+
+%\baselineskip= 20pt
+
+%\newpage
+
+\section{Introduction} \label{introduction}
+
+The SIR (Susceptible, Infected, Removed) epidemiological model epidemic dynamics is re-interpreted in terms of the random time transformation (RTT) method for the solution of differential equations subject to noise, presented by Bassan et. al. (1996). Unlike Diffusion methods that place noise vertically, the RTT method adopts the solution to the deterministic system of differential equations, but considers it as evaluated at a random time process that advances on the average like chronological time. This random time is modelled as a Gaussian process (Brownian Motion or Orenstien-Uhlenbeck) and this provides a likelihood model for the estimation of parameters inherent in the SIR (or otherwise) system of PDE. The differentials in these equations identify the Jacobian term in the likelihood function, for the application of MLE, including both point estimates and standard errors.
+
+\bigskip
+
+Let $S(t) = K - X(t)$ be the number of susceptible cases at time $t$, expressed in terms of the number of cases X(t) and the unknown parameter $K$, the asymptote to which $X$ eventually converges. Let $R(t)$ be the removed cases at time $t$, dead ($V(t)$) or recovered ($W(t)=R(t)-V(t)$). Let $I(t)=S(t)-R(t)$ be the infected cases at time $t$. The usual formulation of the SIR system of PDE is the variant of
+\begin{eqnarray}
+dX(t) & = & \beta g(I(t)) \max(0,K - X(t)) dt \label{DEforX} \\
+dR(t) & = & \gamma I(t) \label{DEforR} dt \\
+I(t) & = & X(t)-R(t) \label{eqforI}
+\end{eqnarray}
+in which the function $g$ is simply the identity function $g(x)=x$.
+
+Equations (\ref{DEforR}) and (\ref{eqforI}) as well as the linear appearance of the susceptible cases in (\ref{DEforX}) are quite straightforward under a stationary regime, but the role of $I(t)$ in (\ref{DEforX}) needs some attention. The effective vicinity of a susceptible case need not be the entire infected cohort. The experience to be reported here on the study of the current Covid19 pandemic has shown that $g(x)=x$ provides an inadequate fit to national-level data, but $g(x)=\sqrt{x}$ behaves adequately. For the purpose of illustration of the method and analysis of the current data, the latter will be adopted, without even attempting to check whether powers other than $1$ and ${1 \over 2}$ improve adequacy. This modification has a price, as the accepted meaning of the parameter $\beta$ is lost.
+
+\bigskip
+
+Let the empirical data consist of $(X_1,R_1), (X_2,R_2), \dots, (X_n, R_n)$. 
+
+Here is a detailed description of the method. No attempt will be made to solve the SIR system analytically. Instead, a small increment of time $\delta={1 \over N}$ is set, and the PDE is solved numerically as a difference equation. Interpreting as time the indices of the empirical data, $N=100$ is a reasonable choice.
+
+Fix the parameters $\beta, \gamma, K$, initiate functions $x$ and $r$ as $X_1$ and $R_1$ respectively, initiate $i$ as $X_1-R_1$ and proceed with the definition for $j \ge 2$
+\begin{eqnarray}
+x(j)&=&x(j-1)+\beta g(i(j-1))\max(0,K-x(i-1)) \delta \nonumber \\
+r(j)&=&r(j-1)+\gamma i(j-1) \delta \nonumber \\
+i(j)&=&max(0,x(j)-r(j)) \label{thesolution}
+\end{eqnarray}
+
+Define next the random time trajectory as starting as $T_1(1)=1, T_2(1)=1$. For $m=2,3,\cdots,n$, let $T_1(m)$ be the smallest $j$ for which $x(j) \ge X_j$ and let $T_2(m)$ be the smallest $j$ for which $r(j) \ge R_j$.
+
+Now solve for $\beta$ and $\gamma$ so that $T_1(n)=T_2(n)=n$. That is, incremental time has average $1$ in both equations. Define $\Delta_1(m)=T_1(m+1)-T_1(m)$ and $\Delta_2(m)=T_2(m+1)-T_2(m)$, for $m=1, 2, \cdots,m-1$ as the increments of the $T_1$ amd $T_2$ processes.
+
+View these $(\Delta_1(m),\Delta_2(m))$ as observations from a bivariate mean-zero Gaussian distribution, and let $\Sigma$ be their empirical covariance matrix. Up to a multiplicative constant, the normal density evaluated at these data is $(\det(\Sigma))^{-{{n-1} \over 2}}$.
+
+To obtain the likelihood function, the above density must be multiplied by the Jacobian of the transformation. This can easily be seen to be $1$ over the product over the sample of the differential terms $\beta g(X_m-R_m)\max(0,K-X_m)$ and $\gamma (X_m-R_m)$, perhaps evaluated at
+${{X_m+X_{m-1}} \over 2}$ and ${{R_m+R_{m-1}} \over 2}$ instead of $X_m$ and $R_m$.
+
+The parameter $K$ is MLE-estimated by maximizing the logarithm of this profile likelihood function, and its standard error is estimated with the usual empirical Fisher information.
+
+
+
+    
+
+
+ 
+
+
+
+
+
+
+\section*{Acknowledgements}
+
+\baselineskip= 28pt
+
+\begin{thebibliography}{99}
+	
+	
+\end{thebibliography}
+
+\end{document}
