@@ -5,16 +5,16 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericMatrix innerLoop(int n, int NumberOfIterations, double Beta, double Gamma, double Del, double Alpha, double K, NumericVector x,
-               NumericVector vw, NumericVector y){
+NumericMatrix innerLoop(int n, int NumberOfIterations, double Beta, double Gamma, double Del, double Alpha, double K, float x,
+               float vw, float y){
   int m = NumberOfIterations * 5 * n;
   NumericVector xnew (m);
   NumericVector vwnew (m);
   NumericVector ynew (m);
   for(int i=0; i < 100; i ++){
-    xnew[i] = x[1];
-    vwnew[i] = vw[1];
-    ynew[i] = y[1];
+    xnew[i] = x;
+    vwnew[i] = vw;
+    ynew[i] = y;
     
   }
   for(int i=100; i < m; i ++){

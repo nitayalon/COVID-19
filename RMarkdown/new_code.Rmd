@@ -22,7 +22,7 @@ V = covid_data[,2]
 W = covid_data[,3]
 VW = V+W
 Y = X - VW
-ind <- 52
+ind <- 56
 X_trimmed = X[ind:n]
 V_trimmed = V[ind:n]
 W_trimmed = W[ind:n]
@@ -106,26 +106,24 @@ for(hhh in 1:hhh_upper_limit)
     # gamma_hat = c(beta_hat,gamma)
     for(j in 1:calibration_loops)
     {
-      if(cpp){
         res <- innerLoop(n,number_of_inner_loops,Beta = beta,Gamma = gamma,
                          Del = del,Alpha = alpha,
-                         K = K,x = X_trimmed, vw = VW_trimmed, y = Y_trimmed)
-        
-        x = res[1,]
-        vw = res[2,]
-        y = res[3,]
-      }
-      else{
-        for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
-        {
-          # infection rate growth
-          x[i] = x[i-1] + beta * y[i-1] ^ alpha * max(0, 1 - x[i-1] / K) * del
-          # removed rate
-          vw[i]=vw[i-1] + gamma * y[i-1] * del
-          # Current ills
-          y[i]=max(0,x[i]-vw[i])
-        }
-      }
+                         K = K,x = X_trimmed[1], vw = VW_trimmed[1], y = Y_trimmed[1])
+
+        x = round(res[1,],5)
+        vw = round(res[2,],5)
+        y = round(res[3,],5)
+      # # }
+      # # else{
+        # for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
+        # {
+        #   # infection rate growth
+        #   x[i] = x[i-1] + beta * y[i-1] ^ alpha * max(0, 1 - x[i-1] / K) * del
+        #   # removed rate
+        #   vw[i]=vw[i-1] + gamma * y[i-1] * del
+        #   # Current ills
+        #   y[i]=max(0,x[i]-vw[i])
+        # }
       for(i in 1:n)
       {
         # random time transformation
@@ -154,26 +152,14 @@ for(hhh in 1:hhh_upper_limit)
   OBJB[hhh]=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
 }
 print(COV)
-print(COV_cpp)
 # TT_cpp <- TT
 # COV_cpp=t(TT)%*%TT/(n-1)
 beep('sword')
 # take the 5 points centered at K_max - repartiton the interval and compute a finer loop
 ```
 
-```{r validation plots}
-plot(x[(1:length(x)) %% 100 == 0]/ 1e5, type = 'l', col = 'blue')
-lines(X_trimmed/ 1e5, col = 'red')
 
-plot(vw[(1:length(vw)) %% 100 == 0]/ 1e5, col = 'red', type = 'l')
-lines(VW_trimmed / 1e5,col = 'blue')
-
-plot(y[(1:length(y)) %% 100 == 0] / 1e5, col = 'red', type= 'l')
-lines(Y_trimmed / 1e5, col = 'blue')
-```
-
-
-```{r}
+```{r llk minimization}
 plot(OBJB, type = 'l')
 plot(OBJ, type = 'l')
 ```
@@ -184,14 +170,14 @@ When we compute the CI we should consider the dimension of the data (Chi2)
 ```{r minimizing OBJ and OBJB}
 uuB=min(OBJB)
 vvB=which.min(OBJB)
-beta=beta_hat[,vvB]
-gamma=gammahat[vvB]
+beta_mle=beta_hat[nrow(beta_hat),vvB]
+gamma_mle=gamma_hat[nrow(gamma_hat),vvB]
 K=asympt[vvB]
 
 uuA=min(OBJ)
 vvA=which.min(OBJ)
-betaA=betahat[vvA]
-gammaA=gammahat[vvA]
+beta_mle_A=beta_hat[nrow(beta_hat),vvA]
+gamma_mle_A=gamma_hat[nrow(gamma_hat),vvA]
 KA=asympt[vvA]
 
 matrA = matrix(c(rep(1,11), t((vvA-5):(vvA+5)), t((vvA-5):(vvA+5))^2), nrow = 11);
@@ -210,14 +196,15 @@ KB=max(X)+wwB*NNN
 
 # beta = 1.227*10^-4
 # gamma = 2.58187*10^-2
-for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
-{
-  x[i]=x[i-1]+beta*(y[i-1])*(1 - x[i-1] / K)*del
-  
-  vw[i]=vw[i-1]+gamma*y[i-1]*del
-  
-  y[i]=max(0,x[i]-vw[i])
-}
+res_mle <- innerLoop(n,number_of_inner_loops,
+                     Beta = beta_mle,
+                     Gamma = gamma_mle,
+                         Del = del,Alpha = alpha,
+                         K = KA,x = X_trimmed[1], vw = VW_trimmed[1], y = Y_trimmed[1])
+
+x_mle = round(res_mle[1,],5)
+vw_mle = round(res_mle[2,],5)
+y_ml = round(res_mle[3,],5)
 for(i in 1:n)
 {
     T1[i,1]=sum(x<=X[i])
@@ -231,6 +218,17 @@ BD=gamma*Y_middle
 print(c(beta, gamma , beta/gamma))
 ```
 beta should be $1.227*10^-4$  and gamma should be $2.58187*10^-2$
+
+```{r validation plots}
+plot(x[(1:length(x)) %% 100 == 0]/ 1e5, type = 'l', col = 'blue')
+lines(X_trimmed/ 1e5, col = 'red')
+
+plot(vw[(1:length(vw)) %% 100 == 0]/ 1e5, col = 'red', type = 'l')
+lines(VW_trimmed / 1e5,col = 'blue')
+
+plot(y[(1:length(y)) %% 100 == 0] / 1e5, col = 'red', type= 'l')
+lines(Y_trimmed / 1e5, col = 'blue')
+```
 
 ```{r model plots}
 plot(log(x[(1:length(x)) %% 100 == 0]), type = 'l', col = 'blue', ylab = 'Log cases', xlab = 'Time')
