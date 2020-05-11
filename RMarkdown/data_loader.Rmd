@@ -31,7 +31,7 @@ global_confirmed_recovered %>%
 
 
 ```{r extract state data}
-state = 'Germany'
+state = 'Italy'
 confirmed_cases <- global_confirmed_cases %>% 
   select(-`Province/State`, -Lat, -Long) %>% 
   group_by(`Country/Region`) %>% 
