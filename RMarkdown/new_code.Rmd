@@ -101,9 +101,6 @@ for(hhh in 1:hhh_upper_limit)
     asympt[hhh] = K
     beta <- (X_trimmed[n]-X_trimmed[1])/ sum(max(1,Y_middle ^ alpha - Y_middle[1] ^ alpha)*(1 - (X_middle-X_middle[1]) / K))
     gamma <- (VW[n]-VW[1])/sum(max(1,Y_middle-Y_middle[1]))
-    
-    # beta_hat = c(beta_hat,beta)
-    # gamma_hat = c(beta_hat,gamma)
     for(j in 1:calibration_loops)
     {
       if(cpp){
@@ -141,10 +138,10 @@ for(hhh in 1:hhh_upper_limit)
     }
   T_final=T1
   TT=diff(T_final)-1
-  print(colMeans(TT))
+  # print(colMeans(TT))
   COV=t(TT)%*%TT/(n-1)
   # The solution deviratives - Jacobi matrix
-  AD=beta * Y_middle ^ alpha *max(0, 1 - X_middle / K)
+  AD=beta * Y_middle ^ alpha * max(0, 1 - X_middle / K)
   BD=gamma * Y_middle
   
   OBJ1=sum(log(AD)+log(BD)) #single figure - denom
@@ -154,24 +151,11 @@ for(hhh in 1:hhh_upper_limit)
   OBJB[hhh]=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
 }
 print(COV)
-print(COV_cpp)
 # TT_cpp <- TT
 # COV_cpp=t(TT)%*%TT/(n-1)
 beep('sword')
 # take the 5 points centered at K_max - repartiton the interval and compute a finer loop
 ```
-
-```{r validation plots}
-plot(x[(1:length(x)) %% 100 == 0]/ 1e5, type = 'l', col = 'blue')
-lines(X_trimmed/ 1e5, col = 'red')
-
-plot(vw[(1:length(vw)) %% 100 == 0]/ 1e5, col = 'red', type = 'l')
-lines(VW_trimmed / 1e5,col = 'blue')
-
-plot(y[(1:length(y)) %% 100 == 0] / 1e5, col = 'red', type= 'l')
-lines(Y_trimmed / 1e5, col = 'blue')
-```
-
 
 ```{r}
 plot(OBJB, type = 'l')
@@ -182,17 +166,17 @@ plot(OBJ, type = 'l')
 Next we minimize OBJ and OBJB to find the optimal value of hhh
 When we compute the CI we should consider the dimension of the data (Chi2)
 ```{r minimizing OBJ and OBJB}
-uuB=min(OBJB)
-vvB=which.min(OBJB)
-beta=beta_hat[,vvB]
-gamma=gammahat[vvB]
-K=asympt[vvB]
+single_dim_llk=min(OBJB)
+single_dim_llk_ind=which.min(OBJB)
+beta_mle=beta_hat[single_dim_llk_ind,nrow(beta_hat)]
+gamma_mle=gamma_hat[single_dim_llk_ind,nrow(gamma_hat)]
+K_one_dim=asympt[single_dim_llk_ind]
 
-uuA=min(OBJ)
-vvA=which.min(OBJ)
-betaA=betahat[vvA]
-gammaA=gammahat[vvA]
-KA=asympt[vvA]
+two_dim_llk=min(OBJ)
+two_dim_llk_ind=which.min(OBJ)
+beta_mle_two_dim=beta_hat[two_dim_llk_ind,nrow(beta_hat)]
+gamma_mle_two_dim=gamma_hat[two_dim_llk_ind,nrow(gamma_hat)]
+K_two_dim=asympt[two_dim_llk_ind]
 
 matrA = matrix(c(rep(1,11), t((vvA-5):(vvA+5)), t((vvA-5):(vvA+5))^2), nrow = 11);
 cofsA = matrA / OBJ[(vvA-5):(vvA+5)]
@@ -211,23 +195,24 @@ KB=max(X)+wwB*NNN
 # beta = 1.227*10^-4
 # gamma = 2.58187*10^-2
 for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
-{
-  x[i]=x[i-1]+beta*(y[i-1])*(1 - x[i-1] / K)*del
-  
-  vw[i]=vw[i-1]+gamma*y[i-1]*del
-  
-  y[i]=max(0,x[i]-vw[i])
-}
+  {
+    # infection rate growth
+    x[i] = x[i-1] + beta_mle_two_dim * y[i-1] ^ alpha * max(0, 1 - x[i-1] / K_two_dim) * del
+    # removed rate
+    vw[i]=vw[i-1] + gamma_mle_two_dim * y[i-1] * del
+    # Current ills
+    y[i]=max(0,x[i]-vw[i])
+  }
 for(i in 1:n)
 {
-    T1[i,1]=sum(x<=X[i])
-    T1[i,2]=sum(vw<=VW[i])
+    T1[i,1]=sum(x<=X_trimmed[i])
+    T1[i,2]=sum(vw<=VW_trimmed[i])
 }
 T1=T1*del
 TT=diff(T1)-1
 COV=t(TT)%*%TT/(n-1)
-AD=beta*Y_middle*max(K-X_middle,0)
-BD=gamma*Y_middle
+AD=beta * Y_middle ^ alpha * max(0, 1 - X_middle / K)
+BD=gamma * Y_middle
 print(c(beta, gamma , beta/gamma))
 ```
 beta should be $1.227*10^-4$  and gamma should be $2.58187*10^-2$
@@ -236,6 +221,17 @@ beta should be $1.227*10^-4$  and gamma should be $2.58187*10^-2$
 plot(log(x[(1:length(x)) %% 100 == 0]), type = 'l', col = 'blue', ylab = 'Log cases', xlab = 'Time')
 lines(log(y[(1:length(x)) %% 100 == 0]), col = 'red')
 lines(log(vw[(1:length(x)) %% 100 == 0]), col = 'green')
+```
+
+```{r validation plots}
+plot(x[(1:length(x)) %% 100 == 0]/ 1e5, type = 'l', col = 'blue')
+lines(X_trimmed/ 1e5, col = 'red')
+
+plot(vw[(1:length(vw)) %% 100 == 0]/ 1e5, col = 'blue', type = 'l')
+lines(VW_trimmed / 1e5,col = 'red')
+
+plot(y[(1:length(y)) %% 100 == 0] / 1e5, col = 'blue', type= 'l')
+lines(Y_trimmed / 1e5, col = 'red', type='l')
 ```
 
  Take the argmin and search for the first value where the llk increase by 10 (two-sided)
