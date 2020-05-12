@@ -9,6 +9,7 @@ output: html_document
 library(beepr)
 library(dplyr)
 library(tidyverse)
+library(Rcpp)
 ```
 
 ```{r}
@@ -16,18 +17,13 @@ covid_data <-
 full_data_for_export %>% 
   select(-var) %>% 
   as.matrix()
-n = nrow(covid_data)
-X = covid_data[,1]
-V = covid_data[,2]
-W = covid_data[,3]
+ind <- 52
+X = covid_data[ind:nrow(covid_data),1]
+V = covid_data[ind:nrow(covid_data),2]
+W = covid_data[ind:nrow(covid_data),3]
 VW = V+W
 Y = X - VW
-ind <- 52
-X_trimmed = X[ind:n]
-V_trimmed = V[ind:n]
-W_trimmed = W[ind:n]
-VW_trimmed = V_trimmed+W_trimmed
-Y_trimmed = X_trimmed - VW_trimmed
+n <- length(X)
 # input: X, V, W, 
 # VW = V + W
 # Y = X - VW
@@ -35,30 +31,26 @@ Y_trimmed = X_trimmed - VW_trimmed
 ```
 
 ```{r validation plots}
-plot(X / 1e5, type = 'l', col = 'blue')
+plot(X / 1e5, type = 'l', col = 'blue', ylim = c(0,2.5), panel.first = grid())
 lines(Y/ 1e5, col = 'red')
 lines(VW/ 1e5, col = 'green')
-
-plot(X_trimmed / 1e5, type = 'l', col = 'blue', ylim = c(0,2.5))
-lines(Y_trimmed / 1e5, col = 'red')
-lines(VW_trimmed / 1e5, col = 'green')
 ```
 
 
 ```{r comute the middle point for each data point}
-n <- length(X_trimmed)
-Y_middle=(Y_trimmed[1:(n-1)]+Y_trimmed[2:n])/2
-Y_middle=c(Y_middle, Y_trimmed[n])
-X_middle=(X_trimmed[1:(n-1)]+X_trimmed[2:n])/2
-X_middle=c(X_middle, X_trimmed[n])
+n <- length(X)
+Y_middle=(Y[1:(n-1)]+Y[2:n])/2
+Y_middle=c(Y_middle, Y[n])
+X_middle=(X[1:(n-1)]+X[2:n])/2
+X_middle=c(X_middle, X[n])
 ```
 
 ```{r validation plot}
-plot(Y_middle, type = 'l', col = 'blue')
-lines(Y_trimmed, col = 'red')
+plot(Y_middle / 1e5, type = 'l', col = 'blue')
+lines(Y / 1e5 , col = 'red')
 
-plot(X_middle, type = 'l', col = 'blue')
-lines(X_trimmed, col = 'red')
+plot(X_middle / 1e5 , type = 'l', col = 'blue')
+lines(X / 1e5 , col = 'red')
 ```
 
 
@@ -66,13 +58,14 @@ lines(X_trimmed, col = 'red')
 partition_parameter = 100
 del = 1/partition_parameter # dt
 # Set the first 100 obs to same value - can be 52,53
-x = y = vw = c()
-x[1:partition_parameter]=X_trimmed[1]
-y[1:partition_parameter]=Y_trimmed[1]
-vw[1:partition_parameter]=VW_trimmed[1]
 asympt = c()
 LOGL = VAR1 = OBJ = OBJB = c()
 T_final = T1 = matrix(0, ncol = 2, nrow = n)
+calibration_loops = 5
+hhh_upper_limit = 400
+gamma_hat = beta_hat = matrix(nrow = calibration_loops, ncol = hhh_upper_limit)
+NNN = floor(max(X) / 100) #What is the grid of K
+alpha = 0.5
 ```
 
 1. Keep $\alpha = 1$
@@ -88,47 +81,27 @@ Repeat for US as well
 ```{r random time estimation}
 # NNN=1000 #What is the grid of K
 #' One possibily is to take the maximal value of X, K = 1.25 * X_max
-NNN=floor(max(X) / 100) #What is the grid of K
-hhh_upper_limit = 200
-number_of_inner_loops = 100
-calibration_loops = 200
-alpha = 0.5
-cpp <- FALSE
-gamma_hat = beta_hat = matrix(nrow = calibration_loops, ncol = hhh_upper_limit)
 for(hhh in 1:hhh_upper_limit)
   {
     K = max(X) + hhh * NNN
     asympt[hhh] = K
-    beta <- (X_trimmed[n]-X_trimmed[1])/ sum(max(1,Y_middle ^ alpha - Y_middle[1] ^ alpha)*(1 - (X_middle-X_middle[1]) / K))
+    beta <- (X[n]-X[1])/ sum(max(1,Y_middle ^ alpha - Y_middle[1] ^ alpha)*(1 - (X_middle-X_middle[1]) / K))
     gamma <- (VW[n]-VW[1])/sum(max(1,Y_middle-Y_middle[1]))
     for(j in 1:calibration_loops)
     {
-      if(cpp){
-        res <- innerLoop(n,number_of_inner_loops,Beta = beta,Gamma = gamma,
-                         Del = del,Alpha = alpha,
-                         K = K,x = X_trimmed, vw = VW_trimmed, y = Y_trimmed)
-        
-        x = res[1,]
-        vw = res[2,]
-        y = res[3,]
-      }
-      else{
-        for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
-        {
-          # infection rate growth
-          x[i] = x[i-1] + beta * y[i-1] ^ alpha * max(0, 1 - x[i-1] / K) * del
-          # removed rate
-          vw[i]=vw[i-1] + gamma * y[i-1] * del
-          # Current ills
-          y[i]=max(0,x[i]-vw[i])
-        }
-      }
-      for(i in 1:n)
-      {
+      res <- innerLoop(n, partition_parameter, Beta = beta,Gamma = gamma,
+                       Del = del,Alpha = alpha,
+                       K = K,x = X[1], vw = VW[1], y = Y[1])
+
+      x = round(res[1,],5)
+      vw = round(res[2,],5)
+      y = round(res[3,],5)
         # random time transformation
         # The events where the pde solution equals to the emphirical values
-        T1[i,1] = sum(x<=X_trimmed[i])
-        T1[i,2] = sum(vw<=VW_trimmed[i])
+      for(i in 1:n)
+      {
+        T1[i,1] = sum(x<=X[i])
+        T1[i,2] = sum(vw<=VW[i])
       }
       T1=T1*del
       beta = beta * T1[n,1]/n
@@ -136,7 +109,19 @@ for(hhh in 1:hhh_upper_limit)
       beta_hat[j,hhh] = beta
       gamma_hat[j,hhh] = gamma
     }
-  T_final=T1
+  res <- innerLoop(n, partition_parameter,Beta = beta,Gamma = gamma,
+                   Del = del,Alpha = alpha,
+                   K = K,x = X[1], vw = VW[1], y = Y[1])
+  
+  x = round(res[1,],5)
+  vw = round(res[2,],5)
+  y = round(res[3,],5)
+  for(i in 1:n)
+  {
+    T1[i,1] = sum(x<=X[i])
+    T1[i,2] = sum(vw<=VW[i])
+  }
+  T_final=T1*del
   TT=diff(T_final)-1
   # print(colMeans(TT))
   COV=t(TT)%*%TT/(n-1)
@@ -150,16 +135,13 @@ for(hhh in 1:hhh_upper_limit)
   VAR1[hhh]=mean(diag(COV))
   OBJB[hhh]=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
 }
-print(COV)
-# TT_cpp <- TT
-# COV_cpp=t(TT)%*%TT/(n-1)
 beep('sword')
-# take the 5 points centered at K_max - repartiton the interval and compute a finer loop
 ```
 
-```{r}
-plot(OBJB, type = 'l')
-plot(OBJ, type = 'l')
+
+```{r llk minimization}
+plot(asympt, OBJB, type = 'l')
+plot(asympt, OBJ, type = 'l')
 ```
 
 
@@ -168,54 +150,63 @@ When we compute the CI we should consider the dimension of the data (Chi2)
 ```{r minimizing OBJ and OBJB}
 single_dim_llk=min(OBJB)
 single_dim_llk_ind=which.min(OBJB)
-beta_mle=beta_hat[single_dim_llk_ind,nrow(beta_hat)]
-gamma_mle=gamma_hat[single_dim_llk_ind,nrow(gamma_hat)]
+beta_mle=beta_hat[nrow(beta_hat),single_dim_llk_ind]
+gamma_mle=gamma_hat[nrow(gamma_hat),single_dim_llk_ind]
 K_one_dim=asympt[single_dim_llk_ind]
 
 two_dim_llk=min(OBJ)
 two_dim_llk_ind=which.min(OBJ)
-beta_mle_two_dim=beta_hat[two_dim_llk_ind,nrow(beta_hat)]
-gamma_mle_two_dim=gamma_hat[two_dim_llk_ind,nrow(gamma_hat)]
+beta_mle_two_dim=beta_hat[nrow(beta_hat),two_dim_llk_ind]
+gamma_mle_two_dim=gamma_hat[nrow(gamma_hat),two_dim_llk_ind]
 K_two_dim=asympt[two_dim_llk_ind]
 
-matrA = matrix(c(rep(1,11), t((vvA-5):(vvA+5)), t((vvA-5):(vvA+5))^2), nrow = 11);
-cofsA = matrA / OBJ[(vvA-5):(vvA+5)]
-wwA=-cofsA[2]/(2*cofsA[3])
-FISHERA=2*cofsA[3]/NNN^2
-KA=max(X)+wwA*NNN
+if(min(single_dim_llk_ind,two_dim_llk_ind)>5){
+  matrA = matrix(c(rep(1,11), t((single_dim_llk_ind-5):(single_dim_llk_ind+5)), t((single_dim_llk_ind-5):(single_dim_llk_ind+5))^2), nrow = 11);
+  cofsA = matrA / OBJ[(single_dim_llk_ind-5):(single_dim_llk_ind+5)]
+  wwA=-cofsA[2]/(2*cofsA[3])
+  FISHERA=2*cofsA[3]/NNN^2
+  KA=max(X)+wwA*NNN
+  matrB=matrix(c(rep(1,11), t((two_dim_llk_ind-5):(two_dim_llk_ind+5)), t((two_dim_llk_ind-5):(two_dim_llk_ind+5))^2), nrow = 11);
+  cofsB=matrB / OBJB[(two_dim_llk_ind-5):(two_dim_llk_ind+5)]
+  wwB=-cofsB[2]/(2*cofsB[3])
+  FISHERB=2*cofsB[3]/NNN^2
+  KB=max(X)+wwB*NNN
+}
+res_mle <- innerLoop(n,
+                     partition_parameter,
+                     Beta = beta_mle,
+                     Gamma = gamma_mle,
+                     Del = del,Alpha = alpha,
+                     K = KA,
+                     x = X[1], vw = VW[1], y = Y[1])
 
-matrB=matrix(c(rep(1,11), t((vvB-5):(vvB+5)), t((vvB-5):(vvB+5))^2), nrow = 11);
-cofsB=matrB / OBJB[(vvB-5):(vvB+5)]
-wwB=-cofsB[2]/(2*cofsB[3])
-FISHERB=2*cofsB[3]/NNN^2
-KB=max(X)+wwB*NNN
-# Here we have to decide id we only compute for X or ofr (X,VW)
-# if we keep past iteration - this is redundent
-
-# beta = 1.227*10^-4
-# gamma = 2.58187*10^-2
-for(i in (number_of_inner_loops + 1):(number_of_inner_loops * 5 * n))
-  {
-    # infection rate growth
-    x[i] = x[i-1] + beta_mle_two_dim * y[i-1] ^ alpha * max(0, 1 - x[i-1] / K_two_dim) * del
-    # removed rate
-    vw[i]=vw[i-1] + gamma_mle_two_dim * y[i-1] * del
-    # Current ills
-    y[i]=max(0,x[i]-vw[i])
-  }
+x_mle = round(res_mle[1,],5)
+vw_mle = round(res_mle[2,],5)
+y_mle = round(res_mle[3,],5)
 for(i in 1:n)
 {
-    T1[i,1]=sum(x<=X_trimmed[i])
-    T1[i,2]=sum(vw<=VW_trimmed[i])
+    T1[i,1]=sum(x<=X[i])
+    T1[i,2]=sum(vw<=VW[i])
 }
 T1=T1*del
 TT=diff(T1)-1
 COV=t(TT)%*%TT/(n-1)
 AD=beta * Y_middle ^ alpha * max(0, 1 - X_middle / K)
 BD=gamma * Y_middle
-print(c(beta, gamma , beta/gamma))
+print(c(beta_mle, gamma_mle * 100))
+print(c(beta_mle_two_dim, gamma_mle_two_dim * 100))
 ```
 beta should be $1.227*10^-4$  and gamma should be $2.58187*10^-2$
+
+```{r validation plots}
+plot(X/ 1e5, col = 'blue' , type = 'b', pch=7, ylim = c(0,2.5))
+lines(VW / 1e5,col = 'blue', type = 'b', pch=13)
+lines(Y / 1e5, col = 'blue', type = 'b', pch=19)
+
+lines(x_mle[(1:length(x_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=7)
+lines(vw_mle[(1:length(vw_mle)) %% 100 == 0]/ 1e5, col = 'red', type = 'b', pch=13)
+lines(y_mle[(1:length(y_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=19)
+```
 
 ```{r model plots}
 plot(log(x[(1:length(x)) %% 100 == 0]), type = 'l', col = 'blue', ylab = 'Log cases', xlab = 'Time')
@@ -225,13 +216,13 @@ lines(log(vw[(1:length(x)) %% 100 == 0]), col = 'green')
 
 ```{r validation plots}
 plot(x[(1:length(x)) %% 100 == 0]/ 1e5, type = 'l', col = 'blue')
-lines(X_trimmed/ 1e5, col = 'red')
+lines(X/ 1e5, col = 'red')
 
 plot(vw[(1:length(vw)) %% 100 == 0]/ 1e5, col = 'blue', type = 'l')
-lines(VW_trimmed / 1e5,col = 'red')
+lines(VW / 1e5,col = 'red')
 
 plot(y[(1:length(y)) %% 100 == 0] / 1e5, col = 'blue', type= 'l')
-lines(Y_trimmed / 1e5, col = 'red', type='l')
+lines(Y / 1e5, col = 'red', type='l')
 ```
 
  Take the argmin and search for the first value where the llk increase by 10 (two-sided)

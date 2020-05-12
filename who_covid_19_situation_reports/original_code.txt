@@ -31,29 +31,29 @@ for hhh=1:400,K=max(X)+hhh*NNN;
       x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
       vw(i)=vw(i-1)+gamma*y(i-1)*del;
       y(i)=max(0,x(i)-vw(i));
-    end
-    for i=1:n
-      T1(i,1)=sum(x<=X(i));T1(i,2)=sum(vw<=VW(i));
-    end
+      end
+      for i=1:n
+        T1(i,1)=sum(x<=X(i));T1(i,2)=sum(vw<=VW(i));
+      end
     T1=T1*del;
     beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
     betahat(hhh)=beta;gammahat(hhh)=gamma;
-end
-for i=MMM+1:5*MMM*n
+  end
+  for i=MMM+1:5*MMM*n
     x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
     vw(i)=vw(i-1)+gamma*y(i-1)*del;
     y(i)=max(0,x(i)-vw(i));
-      end
-for i=1:n
+  end
+  for i=1:n
     T(i,1)=sum(x<=X(i));T(i,2)=sum(vw<=VW(i));
-end
-T=T*del;TT=diff(T)-1;
-COV=TT'*TT/(n-1);
-AD=beta*(Ym.^alpha).*max(1-Xm/K,0);
-BD=gamma*Ym;
-OBJ1=(log(AD)+log(BD))'*ones(n,1);
-OBJ(hhh)=OBJ1+(n/2)*log(det(COV)); LOGL(hhh)=log(det(COV));VAR1(hhh,:)=(mean(diag(COV)));
-OBJB(hhh)=sum(log(AD))+(n/2)*log(COV(1,1));
+  end
+  T=T*del;TT=diff(T)-1;
+  COV=TT'*TT/(n-1);
+  AD=beta*(Ym.^alpha).*max(1-Xm/K,0);
+  BD=gamma*Ym;
+  OBJ1=(log(AD)+log(BD))'*ones(n,1);
+  OBJ(hhh)=OBJ1+(n/2)*log(det(COV)); LOGL(hhh)=log(det(COV));VAR1(hhh,:)=(mean(diag(COV)));
+  OBJB(hhh)=sum(log(AD))+(n/2)*log(COV(1,1));
 end
 [uuB vvB]=min(OBJB);beta=betahat(vvB);gamma=gammahat(vvB);KB=asympt(vvB);
 [uuA vvA]=min(OBJ);betaA=betahat(vvA);gammaA=gammahat(vvA);KA=asympt(vvA);
@@ -69,9 +69,9 @@ cofsB=matrB\OBJB(vvB-5:vvB+5)';
 wwB=-cofsB(2)/(2*cofsB(3));FISHERB=2*cofsB(3)/NNN^2;
 KB=max(X)+wwB*NNN;
 for i=101:5*MMM*n
-x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
-vw(i)=vw(i-1)+gamma*y(i-1)*del;
-y(i)=max(0,x(i)-vw(i));
+  x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
+  vw(i)=vw(i-1)+gamma*y(i-1)*del;
+  y(i)=max(0,x(i)-vw(i));
 end
 clear T1
 for i=1:n
@@ -89,34 +89,34 @@ for i=2:5*MMM*n
 end
 K=KB;
 for jjj=1:5  
- for i=101:5*MMM*n
-   x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
+  for i=101:5*MMM*n
+    x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
     vw(i)=vw(i-1)+gamma*y(i-1)*del;
     y(i)=max(0,x(i)-vw(i));
-end
-for i=1:n
+  end
+  for i=1:n
     T1(i,1)=sum(x<=X(i));T1(i,2)=sum(vw<=VW(i));
-end
-T1=T1*del;
-beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
+  end
+  T1=T1*del;
+  beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
 end
 TT=diff(T1)-1;
 COVB=TT'*TT/(n-1);
 betaB=beta;gammaB=gamma;
 K=KA;
 for jjj=1:5  
- for i=101:5*MMM*n
-x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
+  for i=101:5*MMM*n
+    x(i)=x(i-1)+beta*(y(i-1).^alpha)*max(0,1-x(i-1)/K)*del;
     vw(i)=vw(i-1)+gamma*y(i-1)*del;
     y(i)=max(0,x(i)-vw(i));
-end
-for i=1:n
+  end
+  for i=1:n
     T1(i,1)=sum(x<=X(i));T1(i,2)=sum(vw<=VW(i));
-end
-T1=T1*del;
-beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
-end
-TT=diff(T1)-1;
-COVA=TT'*TT/(n-1);
-betaA=beta;gammaA=gamma;
+  end
+  T1=T1*del;
+  beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
+  end
+  TT=diff(T1)-1;
+  COVA=TT'*TT/(n-1);
+  betaA=beta;gammaA=gamma;
 end
