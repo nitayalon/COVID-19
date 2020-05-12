@@ -77,8 +77,7 @@ D. $alpha = 0.5$
 
 Repeat for US as well
 ```{r random time estimation}
-# NNN=1000 #What is the grid of K
-#' One possibily is to take the maximal value of X, K = 1.25 * X_max
+# This can be moved to lapply/sapply
 for(hhh in 1:hhh_upper_limit)
   {
     K = max(X) + hhh * NNN
