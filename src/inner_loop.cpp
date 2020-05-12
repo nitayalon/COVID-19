@@ -6,8 +6,8 @@ using namespace Rcpp;
 
 // [[Rcpp::export]]
 NumericMatrix innerLoop(int n, 
-                        int NumberOfIterations, double Beta, double Gamma, double Del, double Alpha, double K, float x,
-               float vw, float y){
+                        int NumberOfIterations, double Beta, double Gamma, double Del, double Alpha, double K, double x,
+               double vw, double y){
   int m = NumberOfIterations * 5 * n;
   NumericVector xnew (m);
   NumericVector vwnew (m);

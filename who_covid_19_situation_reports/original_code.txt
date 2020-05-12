@@ -112,11 +112,11 @@ for jjj=1:5
   end
   for i=1:n
     T1(i,1)=sum(x<=X(i));T1(i,2)=sum(vw<=VW(i));
-  end
-  T1=T1*del;
-  beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
-  end
-  TT=diff(T1)-1;
-  COVA=TT'*TT/(n-1);
-  betaA=beta;gammaA=gamma;
+end
+T1=T1*del;
+beta=beta*T1(n,1)/n;gamma=gamma*T1(n,2)/n;
+end
+TT=diff(T1)-1;
+COVA=TT'*TT/(n-1);
+betaA=beta;gammaA=gamma;
 end
