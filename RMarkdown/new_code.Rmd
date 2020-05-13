@@ -12,44 +12,13 @@ library(tidyverse)
 library(Rcpp)
 ```
 
-```{r}
+```{r determine starting day}
 covid_data <- 
 full_data_for_export %>% 
   select(-var) %>% 
   as.matrix()
-ind <- 51
-X = covid_data[ind:nrow(covid_data),1]
-V = covid_data[ind:nrow(covid_data),2]
-W = covid_data[ind:nrow(covid_data),3]
-VW = V+W
-Y = X - VW
-n <- length(X)
-# input: X, V, W, 
-# VW = V + W
-# Y = X - VW
-# n = lnength(X)
-```
-
-```{r validation plots}
-plot(X / 1e5, type = 'l', col = 'blue', ylim = c(0,2.5), panel.first = grid())
-lines(Y/ 1e5, col = 'red')
-lines(VW/ 1e5, col = 'green')
-```
-
-```{r comute the middle point for each data point}
-n <- length(X)
-Y_middle=(Y[1:(n-1)]+Y[2:n])/2
-Y_middle=c(Y_middle, Y[n])
-X_middle=(X[1:(n-1)]+X[2:n])/2
-X_middle=c(X_middle, X[n])
-```
-
-```{r validation plot}
-plot(Y_middle / 1e5, type = 'l', col = 'blue')
-lines(Y / 1e5 , col = 'red')
-
-plot(X_middle / 1e5 , type = 'l', col = 'blue')
-lines(X / 1e5 , col = 'red')
+starting_day <- seq(40:75)
+starting_day_params <- lapply(starting_day, function(i){RunFullCycle(covid_data, i)})
 ```
 
 ```{r devide the day into binns}
@@ -94,31 +63,16 @@ Next we minimize OBJ and OBJB to find the optimal value of hhh
 When we compute the CI we should consider the dimension of the data (Chi2)
 ```{r computing CI for K}
 optimal_ks <- computeOptimalK(OBJB, OBJ, NNN, X)
-res_mle <- innerLoop(n,
-                     partition_parameter,
-                     Beta = beta_mle,
-                     Gamma = gamma_mle,
-                     Del = del,Alpha = alpha,
-                     K = K_one_dim,
-                     x = X[1], vw = VW[1], y = Y[1])
+```
 
-x_mle = round(res_mle[1,],7)
-vw_mle = round(res_mle[2,],7)
-y_mle = round(res_mle[3,],7)
-for(i in 1:n)
-{
-    T1[i,1]=sum(x_mle<=X[i])
-    T1[i,2]=sum(vw_mle<=VW[i])
-}
-T1=T1*del
-TT=diff(T1)-1
-colMeans(TT)
-COV=t(TT)%*%TT/(n-1)
-AD = beta * Y_middle ^ alpha * pmax(0, 1 - X_middle / K)
-BD = gamma * Y_middle
-print(c(beta_mle, gamma_mle * 100))
-print(c(beta_mle_two_dim, gamma_mle_two_dim * 100))
-print(c(K_one_dim, K_two_dim))
+
+```{r for each value of K compute the other sizes}
+one_dim_params <- lapply(optimal_ks$single_dim_CI, function(k){
+  InnerCalibrationLoop(k,X,VW,Y,alpha,Y_middle,X_middle)
+})
+
+one_dim_params[[2]]$beta
+one_dim_params[[2]]$gamma * 100
 ```
 beta should be $1.227*10^-4$  and gamma should be $2.58187*10^-2$
 
