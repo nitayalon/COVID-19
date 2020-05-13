@@ -3,12 +3,11 @@ RunFullCycle <- function(national_data, starting_day, environment_parameter_list
   del = 1/partition_parameter # dt
   asympt = c()
   LOGL = VAR1 = OBJ = OBJB = c()
-  T_final = T1 = matrix(0, ncol = 2, nrow = n)
   calibration_loops = 15
   hhh_upper_limit = 400
   gamma_hat = beta_hat = matrix(nrow = calibration_loops, ncol = hhh_upper_limit)
   alpha = 0.5
-  environment_data <- DataLoader(covid_data,ind)
+  environment_data <- DataLoader(national_data,starting_day)
   X = environment_data$X
   VW = environment_data$VW
   Y = environment_data$Y
@@ -23,10 +22,27 @@ RunFullCycle <- function(national_data, starting_day, environment_parameter_list
   OBJ <- sapply(K_grid_results, function(x){x$OBJ})
   OBJB <- sapply(K_grid_results, function(x){x$OBJB})
   optimal_ks <- computeOptimalK(OBJB, OBJ, NNN, X)
-  one_dim_params <- lapply(optimal_ks$single_dim_CI, function(k){
-    InnerCalibrationLoop(k,X,VW,Y,alpha,Y_middle,X_middle)
-  })
-  return(list(std = mean(diag(COV[[400]])),
-              beta = one_dim_params[[2]]$beta,
-              gamma = one_dim_params[[2]]$gamma * 100))
+  if(is.null(optimal_ks$single_dim_CI) || is.null(optimal_ks$two_dim_CI))
+  {
+    K_max_list <- sapply(K_grid_results, function(x){x$K})
+    K_max <- K_max_list[length(K_max_list)]
+    one_dim_params <- InnerCalibrationLoop(K_max,n, X,VW,Y,alpha,Y_middle,X_middle)
+    cov_matrix = COV[[400]]
+    std = mean(diag(COV[[400]]))
+    beta = one_dim_params$beta
+    gamma = one_dim_params$gamma * 100
+    
+  }
+  else{
+    one_dim_params <- lapply(optimal_ks$single_dim_CI, function(k){
+      InnerCalibrationLoop(k,n, X,VW,Y,alpha,Y_middle,X_middle)})
+    cov_matrix = COV[[400]]
+    std = mean(diag(COV[[400]]))
+    beta = one_dim_params[[2]]$beta
+    gamma = one_dim_params[[2]]$gamma * 100
+  }
+  return(list(cov_matrix = cov_matrix,
+              std = std,
+              beta = beta,
+              gamma = gamma))
 }

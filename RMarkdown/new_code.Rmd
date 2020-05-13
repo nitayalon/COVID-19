@@ -11,15 +11,32 @@ library(dplyr)
 library(tidyverse)
 library(Rcpp)
 ```
-
+Deacresing until day 60, and then ocillates. 
 ```{r determine starting day}
 covid_data <- 
 full_data_for_export %>% 
   select(-var) %>% 
   as.matrix()
-starting_day <- seq(40:75)
+starting_day <- seq(40,75,1)
 starting_day_params <- lapply(starting_day, function(i){RunFullCycle(covid_data, i)})
+which.min(sapply(starting_day_params, function(x){x$std}))
 ```
+
+```{r plotting starting day vs std}
+plot(starting_day, sapply(starting_day_params, function(x){x$std}), type = 'b',ylab = 'mean(diag(cov))',
+     xlab = 'Starting day')
+abline(a = min(sapply(starting_day_params, function(x){x$std})) * 2.5, b = 0, col = 'red')
+abline(a = min(sapply(starting_day_params, function(x){x$std})) * 1.5, b = 0, col = 'green')
+```
+
+```{r plotting beta values}
+plot(starting_day, sapply(starting_day_params, function(x){x$beta}), type = 'b',ylab = 'beta',
+     xlab = 'Starting day')
+plot(starting_day, sapply(starting_day_params, function(x){x$gamma}), type = 'b',ylab = 'gamma',
+     xlab = 'Starting day')
+```
+
+
 
 ```{r devide the day into binns}
 partition_parameter = 100

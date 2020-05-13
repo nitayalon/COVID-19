@@ -2,7 +2,9 @@ GridSearchForK <- function(hhh,X,VW,Y,
                            alpha,Y_middle,X_middle, 
                           NNN){
   K = max(X) + hhh * NNN
-  inner_calibration_loop <- InnerCalibrationLoop(K, X,VW,Y,
+  n = length(X)
+  T_final = T1 = matrix(0, ncol = 2, nrow = n)
+  inner_calibration_loop <- InnerCalibrationLoop(K, n, X,VW,Y,
                                                 alpha,Y_middle,X_middle)
   beta <- inner_calibration_loop$beta
   gamma <- inner_calibration_loop$gamma
