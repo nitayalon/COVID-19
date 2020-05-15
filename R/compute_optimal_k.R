@@ -32,5 +32,5 @@ computeConfInterForK <- function(llk_grid, llk_index, NNN, X) {
   minimum_location = -linear_model_coefs[2]/(2*linear_model_coefs[3]) # minimum location - pm 1 from single_dim_llk_ind
   FISHER_information_number = (2 * linear_model_coefs[3]) / (NNN^2)
   K = max(X) + minimum_location*NNN
-  return(c(K - 2/sqrt(FISHER_information_number), K, K + 2/sqrt(FISHER_information_number)))
+  return(c(K - 2.5/sqrt(FISHER_information_number), K, K + 2.5/sqrt(FISHER_information_number)))
 }

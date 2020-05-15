@@ -1,0 +1,56 @@
+---
+title: "Interim report"
+author: "Nitay Alon"
+date: "May 15, 2020"
+output: html_document
+---
+
+Sweden - check after day 70, explore the data some more
+France - report separately 
+Italy - validate that 52 and 60 makes no difference
+Germany - check after 70
+Chile - Validate the diff between 60 and 70
+
+```{r us data}
+# K = 2.2M
+usa_data <- mainFunction('US',60)
+max(usa_data$X)
+usa_data$final_results$single_dim_CI
+```
+```{r plot US full data set model}
+x_mle <- usa_data$final_results$one_dim_params$x_matrix1$x
+vw_mle <- usa_data$final_results$one_dim_params$x_matrix1$vw
+y_mle <- usa_data$final_results$one_dim_params$x_matrix1$y
+plot(usa_data$X/ 1e5, col = 'blue' , type = 'b', pch=7, panel.first = grid(),
+     ylab = "Number of cases * 10^5", xlab = 'Days', xlim = c(0,120), lty = 1)
+lines(usa_data$VW / 1e5,col = 'blue', type = 'b', pch=13, lty = 2)
+lines(usa_data$Y / 1e5, col = 'blue', type = 'b', pch=19, lty = 3)
+
+lines(x_mle[(1:length(x_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=7, lty  = 1)
+lines(vw_mle[(1:length(vw_mle)) %% 100 == 0]/ 1e5, col = 'red', type = 'b', pch=13, lty = 2)
+lines(y_mle[(1:length(y_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=19, lty = 3)
+legend(0, 14, legend=c("X", "VW",'Y'),
+       col=c("red", "blue" ), pch=c(7,13,19))
+abline(v = which.max(vw_mle[(1:length(vw_mle)) %% 100 == 0] > y_mle[(1:length(y_mle)) %% 100 == 0]), col = 'green',
+       lwd = 2.5)
+```
+
+1. Plot x,y,wv vs X,Y,VW (for $\hat{K}$)
+2. Cut the data the time t1 and the CI for the following days - x,y,vw
+3. Find the date where the infected reaches maximum
+
+```{r all conventional data}
+Italy_day <- 60
+Belgium_day <- 60
+USA <- 60
+Chile <- 60
+Israel <- 64
+Germany <- 65
+Netherlands_day <- 68
+UK <- 70
+```
+
+```{r non conventional data}
+France <- 65
+Sweden <- 65
+```

@@ -55,7 +55,7 @@
 \author {
 Nitay Alon
 \\
-{\em E-mail: \tt{nitay.alon@gmail.com}} \\
+{\em E-mail: \tt{nitayalon@mail.tau.ac.il}} \\
 Isaac Meilijson
 \\
 {\em E-mail: \tt{isaco@tauex.tau.ac.il}} \\
@@ -64,14 +64,15 @@ Isaac Meilijson
 {\em Tel-Aviv University, 6997801 Tel-Aviv, Israel} \\
 }
 
-%\titlerunning{Adjustment and Sharpe}
-%\authorrunning{Isaac Meilijson}
+%\titlerunning{Covid19 2020}
+%\authorrunning{Alon and Meilijson}
 
 \maketitle
 
 \pagenumbering{arabic}
 
 \begin{abstract}
+
 
 
 %\keywords{
@@ -89,25 +90,31 @@ Isaac Meilijson
 
 \section{Introduction} \label{introduction}
 
-The SIR (Susceptible, Infected, Removed) epidemiological model epidemic dynamics is re-interpreted in terms of the random time transformation (RTT) method for the solution of differential equations subject to noise, presented by Bassan et. al. (1996). Unlike Diffusion methods that place noise vertically, the RTT method adopts the solution to the deterministic system of differential equations, but considers it as evaluated at a random time process that advances on the average like chronological time. This random time is modelled as a Gaussian process (Brownian Motion or Orenstien-Uhlenbeck) and this provides a likelihood model for the estimation of parameters inherent in the SIR (or otherwise) system of PDE. The differentials in these equations identify the Jacobian term in the likelihood function, for the application of MLE, including both point estimates and standard errors.
-
-\bigskip
-
-Let $S(t) = K - X(t)$ be the number of susceptible cases at time $t$, expressed in terms of the number of cases X(t) and the unknown parameter $K$, the asymptote to which $X$ eventually converges. Let $R(t)$ be the removed cases at time $t$, dead ($V(t)$) or recovered ($W(t)=R(t)-V(t)$). Let $I(t)=S(t)-R(t)$ be the infected cases at time $t$. The usual formulation of the SIR system of PDE is the variant of
+Let $S(t) = K - X(t)$ be the number of susceptible cases at time $t$, expressed in terms of the number of affected cases $X(t)$ and the possibly unknown parameter $K$ (that may or may not be the population size $N$ usually substituted for $K$). Let $R(t)$ be the removed cases at time $t$, dead ($V(t)$) or recovered ($W(t)=R(t)-V(t)$). Let $I(t)=S(t)-R(t)$ be the number of infected cases at time $t$. The common formulation of the SIR (Susceptible, Infected, Removed) epidemiological model is the variant of the system of ODE
 \begin{eqnarray}
-dX(t) & = & \beta g(I(t)) \max(0,K - X(t)) dt \label{DEforX} \\
+dX(t) & = & \beta(t) g(I(t)) \max(0,1 - X(t)/K) dt \label{DEforX} \\
 dR(t) & = & \gamma I(t) \label{DEforR} dt \\
 I(t) & = & X(t)-R(t) \label{eqforI}
 \end{eqnarray}
-in which the function $g$ is simply the identity function $g(x)=x$.
+where $K=N$ and $g(x)=x$. The parameter $\beta(t)$ is estimated by smooth local regression of \linebreak $X$-increments with respect to the RHS of (\ref{DEforX}). The ratio ${{\beta(t)} \over \gamma}$ is of primary importance, as its transition from above to below $1$ indicates whether the epidemic is spreading or dwindling, whether the number of infected cases $I$ increases or decreases with time.
 
-Equations (\ref{DEforR}) and (\ref{eqforI}) as well as the linear appearance of the susceptible cases in (\ref{DEforX}) are quite straightforward under a stationary regime, but the role of $I(t)$ in (\ref{DEforX}) needs some attention. The effective vicinity of a susceptible case need not be the entire infected cohort. The experience to be reported here on the study of the current Covid19 pandemic has shown that $g(x)=x$ provides an inadequate fit to national-level data, but $g(x)=\sqrt{x}$ behaves adequately. For the purpose of illustration of the method and analysis of the current data, the latter will be adopted, without even attempting to check whether powers other than $1$ and ${1 \over 2}$ improve adequacy. This modification has a price, as the accepted meaning of the parameter $\beta$ is lost.
+At the early stages of the epidemic, the substitution of $K$ by $N$ or anything big enough, even $\infty$, has a similar effect. The purpose of this study is to illustrate on the Covid19 data that if $K$ is allowed to be a free parameter, the SIR system of equations above has an almost exact solution in which $\beta$ is constant, and $K$ is the asymptote to which the number $X$ of affected cases converges, the maximal sub-population size to become affected, if the conditions prevalent at the monitoring stage stay in effect.
+
+Parameter estimation ($\beta, \gamma, K$) will be performed by the Random Time Transformation (RTT) method developed by Bassan, Marcus, Meilijson and Talpaz \cite{Bassanetal}, motivated by the notion of Skew Product in Ergodic Theory. Unlike Diffusion methods that place noise vertically, the RTT method adopts the solution to the deterministic system of differential equations, but considers it as evaluated at a random time process that advances on the average like chronological time. This random time is modelled in practice as a Gaussian process (Brownian Motion or Ornstein-Uhlenbeck) and this provides a likelihood model for the estimation of parameters inherent in the SIR (or otherwise) system of ODE. The differentials in these equations identify the Jacobian term in the likelihood function, for the application of MLE, including both point estimates and standard errors.
 
 \bigskip
 
-Let the empirical data consist of $(X_1,R_1), (X_2,R_2), \dots, (X_n, R_n)$. 
+Equations (\ref{DEforR}) and (\ref{eqforI}) as well as the linear appearance of the susceptible cases in (\ref{DEforX}) are quite straightforward under a stationary regime, but the role of $I(t)$ in (\ref{DEforX}) needs some attention. The effective vicinity of a susceptible case need not be the entire infected cohort, just as the asymptote of affected cases need not be population size $N$. The experience to be reported here on the study of the current Covid19 pandemic has shown that $g(x)=x$ may provide an inadequate fit to national-level data, but $g(x)=\sqrt{x}$ may behave adequately. For the purpose of illustration of the method and analysis of the current data, the two will be compared, but the choice $\alpha={1 \over 2}$ will be adopted. The advantage of using $g(x)=x^\alpha$ with $\alpha<1$ has been reported by Bj{\o}rnstad, Finkenst\"{a}dt and Grenfell in their various publications (see \cite{AAA} and the references therein). By the RTT method to be described in the sequel, profile likelihood with respect to $\alpha$ was evaluated for the data of Covid19 2020 for a number of countries, and estimates and confidence intervals indicate that $\alpha$ between $0.5$ and $0.6$ accomodate most. Further details on this issue will be omitted.
 
-Here is a detailed description of the method. No attempt will be made to solve the SIR system analytically. Instead, a small increment of time $\delta={1 \over N}$ is set, and the PDE is solved numerically as a difference equation. Interpreting as time the indices of the empirical data, $N=100$ is a reasonable choice.
+\bigskip
+
+Let the empirical data consist of $(X_1,R_1), (X_2,R_2), \dots, (X_n, R_n)$, from which the infected case totals $Y_j=X_j-R_j$ can be inferred. As expressed above, the value of $\beta$ at time $j$ is noisily provided by $A_j={{X_j-X_{j-1}} \over {Y_{j-1}(1-{{X_j} \over N})}}$ or by a local smooth regression.
+
+The plan to be pursued is to solve the system above of ODE globally, as adequately as possible, and if this plan succeeds and produces smooth, calculable, functions $(x,r,i)$ that tightly fit the empirical data, we will have a prediction of the maximal future damage $K$ that $X$ will sustain, as well as a smooth function $A(t)={{{dx(t)} \over {dt}} \over {y(t)}}$ that replaces and extrapolates the noisy local growth ratio $A_j$. This function may better pinpoint when did $A$ cross below $\gamma$, or express a predicted transition time below $\gamma$, or warn that such a transition is not due to happen in the foreseeable future.
+
+\bigskip
+
+With this in mind, here is a detailed description of the RTT method. No attempt will be made to solve the SIR system analytically. Instead, a small increment of time $\delta={1 \over M}$ is set, and the PDE is solved numerically as a difference equation. Interpreting as time the indices of the empirical data, $M=100$ is a reasonable choice.
 
 Fix the parameters $\beta, \gamma, K$, initiate functions $x$ and $r$ as $X_1$ and $R_1$ respectively, initiate $i$ as $X_1-R_1$ and proceed with the definition for $j \ge 2$
 \begin{eqnarray}
@@ -116,35 +123,81 @@ r(j)&=&r(j-1)+\gamma i(j-1) \delta \nonumber \\
 i(j)&=&max(0,x(j)-r(j)) \label{thesolution}
 \end{eqnarray}
 
-Define next the random time trajectory as starting as $T_1(1)=1, T_2(1)=1$. For $m=2,3,\cdots,n$, let $T_1(m)$ be the smallest $j$ for which $x(j) \ge X_j$ and let $T_2(m)$ be the smallest $j$ for which $r(j) \ge R_j$.
+Regular Least Squares essentially estimate parameters by minimizing a sum of squares of the vertical errors $X(i)-x(M i), R(i)-r(M i), I(i)-i(M i)$. The RTT idea works instead with horizontal errors:
 
-Now solve for $\beta$ and $\gamma$ so that $T_1(n)=T_2(n)=n$. That is, incremental time has average $1$ in both equations. Define $\Delta_1(m)=T_1(m+1)-T_1(m)$ and $\Delta_2(m)=T_2(m+1)-T_2(m)$, for $m=1, 2, \cdots,m-1$ as the increments of the $T_1$ amd $T_2$ processes.
+\bigskip
 
-View these $(\Delta_1(m),\Delta_2(m))$ as observations from a bivariate mean-zero Gaussian distribution, and let $\Sigma$ be their empirical covariance matrix. Up to a multiplicative constant, the normal density evaluated at these data is $(\det(\Sigma))^{-{{n-1} \over 2}}$.
+Define the {\em random time trajectory} as starting as $T_1(1)=1, T_2(1)=1$. For $m=2,3,\cdots,n$, let $T_1(m)$ be the smallest $j$ for which $x(j) \ge X_j$ and let $T_2(m)$ be the smallest $j$ for which $r(j) \ge R_j$.
 
-To obtain the likelihood function, the above density must be multiplied by the Jacobian of the transformation. This can easily be seen to be $1$ over the product over the sample of the differential terms $\beta g(X_m-R_m)\max(0,K-X_m)$ and $\gamma (X_m-R_m)$, perhaps evaluated at
+Now solve for $\beta$ and $\gamma$ so that $T_1(n)=T_2(n)=n$. That is, incremental time has average $1$ in both equations. Define $\Delta_1(m)=T_1(m+1)-T_1(m)$ and $\Delta_2(m)=T_2(m+1)-T_2(m)$, for $m=1, 2, \cdots,m-1$ as the (mean-$1$) increments of the $T_1$ amd $T_2$ processes.
+
+\bigskip
+
+If population size $N$ was substituted for $K$, work is over. For quality-of-fit sanity check, plot the $(x,r,i)$ solution with the $(X,R,I)$ data, that agree at both time endpoints.
+
+Alternatively, consider $K$ as a free parameter, to be estimated from the data. In principle, other parameters to be estimated together with $K$ may define the function $g$ in (\ref{DEforX}), such as the power $\alpha$ in $g(x)=x^\alpha$. As expressed earlier, in the current report $\alpha$ will be fixed as ${1 \over 2}$ (and perhaps  $1$ will be tested), so $K$ is the only parameter to be estimated.
+
+\bigskip
+
+View the incremental times $(\Delta_1(m),\Delta_2(m))$ as observations from a bivariate mean-zero Gaussian distribution, and let $\Sigma$ be their empirical covariance matrix. Up to a multiplicative constant, the normal density evaluated at these data is $(\det(\Sigma))^{-{{n-1} \over 2}}$.
+
+To obtain the likelihood function, the above density must be multiplied by the Jacobian of the transformation. This can be easily seen to be $1$ over the product over the sample of the differential terms $\beta g(X_m-R_m)\max(0,1-X_m/K)$ and $\gamma (X_m-R_m)$, perhaps evaluated at
 ${{X_m+X_{m-1}} \over 2}$ and ${{R_m+R_{m-1}} \over 2}$ instead of $X_m$ and $R_m$.
+
+\bigskip
 
 The parameter $K$ is MLE-estimated by maximizing the logarithm of this profile likelihood function, and its standard error is estimated with the usual empirical Fisher information.
 
+\begin{itemize}
 
+\item Point and interval estimates for $K$ will be calculated.
 
-    
+\item Point and interval estimates will be evaluated to validate the data at the last day, based on the analysis of the data ending $3,6,9,12,15$ days before the last day.
 
+\item The date with maximal number of infected cases and the date of transition of $\beta$ below $1$ will be reported, with confidence intervals based on $K$-values at the endpoints of the confidence interval for $K$.
 
- 
+\end{itemize}
 
+\section{Covid19 analysis} \label{Covid19}
 
+As will be illustrated,
 
+\begin{itemize}
+
+\item Italian and USA 2020 data until May 12nd provide a totally inacceptable fit for $\alpha=1$ and $K=N$.
+
+\item Italian data provide good fit for both $\alpha=1$ and $\alpha={1 \over 2}$, provided $K$ is left free, in which case it is some $20\%$ higher than the May 12 value of $X$.
+
+\item USA data with $\alpha=1$ provide very inadequate fit for all $K$, and at the MLE of $K$, it is predicted that the number of infected cases $I$ should have reached a maximum on May 8.
+
+\item USA data with $\alpha={1 \over 2}$ provide very good fit, estimating $K$ as roughly twice the $X$-value on May 2, and predicting that $I$ will reach maximal value around May 25. It predicted an increase in $X$ from May 2 to May 9 by some $80000$ new affected cases, and the actual value was $102000$.
+
+\end{itemize}
+
+Graphs are provided next.
+
+\section{A remark on incremental new cases} \label{More}
+
+In principle, the increments $X(i)-X(i-1)$ should be independent, Poisson distributed with some local mean, provided by the differential equations. Poisson random variables $Z$, positive and with variance equal to the mean, should display when this mean is at least $5$ or so, the remarkable property that $\sqrt{Z}$ has standard deviation very close to, and fast converging to ${1 \over 2}$. Whether or not this theoretical fact is satisfied empirically by the $F(i)=\sqrt{max(1,X(i)-X(i-1))}$ data can be checked without reference to the differential equations. Simply, choose a window size $WS$ such as $5$ or $10$, do for each $i$ linear regression of $F(i-WS:i+WS)$ on time $(i-WS:i+WS)$, and record the averages and slopes or correlation coefficients of these lines as well as the standard deviations $\hat{\sigma_i}$ of the residuals. These standard deviations are supposed to estimate ${1 \over 2}$, or else assist in data diagnosis or identify a batch-size of arrivals. Italy and USA display weekly seasonality in which significantly less cases are reported on weekends, and delayed reporting could be more the rule than the exception. In any case, the empirical standard deviations $\hat{\sigma_i}$ are so much bigger than ${1 \over 2}$ that probabilistic modelling methods based on the Poisson hypothesis are not justified.
+
+Graphs are provided next.
 
 
 
 \section*{Acknowledgements}
 
+Thanks are due to Ilan Eshel from prompting this study and to Eytan Ruppin, Amit Huppert and David Steinberg for helpful suggestions.
+
 \baselineskip= 28pt
 
 \begin{thebibliography}{99}
-	
+
+\bibitem{Bassanetal} Bassan, B., Marcus, R., Meilijson, I. and Talpaz, H. (1997). Parameter erstimation in differential equations, using random time transformations. {\em Journal of the Italian Statistical Society}, {\bf 6}, 177--199.
+
+\bibitem{AAA} Grenfell, B.T., Bj{\o}rnstad, O.N. and Filkenst\"{a}dt, B. A. (2002) Dynamics of Measlres epidemics: scaling, noise, determinism and predictability with the TSIR model. {\em Ecological Monographs}, {\bf 72(2)}, 185-–202.
+
+
+\bibitem{BBB}
 	
 \end{thebibliography}
 

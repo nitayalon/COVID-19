@@ -5,7 +5,7 @@ GridSearchForK <- function(hhh,X,VW,Y,
   n = length(X)
   T_final = T1 = matrix(0, ncol = 2, nrow = n)
   inner_calibration_loop <- InnerCalibrationLoop(K, n, X,VW,Y,
-                                                alpha,Y_middle,X_middle)
+                                                 alpha,Y_middle,X_middle)
   beta <- inner_calibration_loop$beta
   gamma <- inner_calibration_loop$gamma
   beta_hat <- inner_calibration_loop$beta_hat
@@ -31,11 +31,15 @@ GridSearchForK <- function(hhh,X,VW,Y,
   BD = gamma * Y_middle
   
   OBJ1=sum(log(AD)+log(BD)) #single figure - denom
-  OBJ=OBJ1+(n/2)*log(det(COV)) # likelihood when we use to BM's
+  OBJ=OBJ1+(n/2)*log(det(COV)) # likelihood when we use two BM's
   LOGL=log(det(COV))
   VAR1=mean(diag(COV))
   OBJB=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
-  return(list(K = K,
+  return(list(x = x,
+              y = y,
+              vw = vw,
+              TT = TT,
+              K = K,
               beta = beta,
               gamma = gamma,
               beta_hat = beta_hat,

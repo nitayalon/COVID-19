@@ -24,7 +24,7 @@ which.min(sapply(starting_day_params, function(x){x$std}))
 
 ```{r plotting starting day vs std}
 plot(starting_day, sapply(starting_day_params, function(x){x$std}), type = 'b',ylab = 'mean(diag(cov))',
-     xlab = 'Starting day')
+     xlab = 'Starting day', ylim = c(0.1,0.3))
 abline(a = min(sapply(starting_day_params, function(x){x$std})) * 2.5, b = 0, col = 'red')
 abline(a = min(sapply(starting_day_params, function(x){x$std})) * 1.5, b = 0, col = 'green')
 ```
