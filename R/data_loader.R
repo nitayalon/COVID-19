@@ -1,13 +1,13 @@
 library(tidyverse)
-DataLoader <- function(covid_data, starting_day,end_day= NULL)
+DataLoader <- function(covid_data, starting_day,cut_off_day= NULL)
 {
   min_feasible_date <- which.max(apply(covid_data, 1, function(x){all(x > 0)}))
   ind <- max(starting_day,min_feasible_date)
-  if(is.null(end_day)){
+  if(is.null(cut_off_day)){
     cutoff <- nrow(covid_data)
   }
   else{
-    cutoff <- min(nrow(covid_data), end_day)
+    cutoff <- min(nrow(covid_data), nrow(covid_data) - cut_off_day)
   }
   X = covid_data[ind:cutoff,1]
   V = covid_data[ind:cutoff,2]

@@ -12,27 +12,58 @@ Germany - check after 70
 Chile - Validate the diff between 60 and 70
 
 ```{r us data}
-# K = 2.2M
+cutoff <- 12
 usa_data <- mainFunction('US',60)
-max(usa_data$X)
+usa_data_minus_3 <- mainFunction('US',60, 12)
+max(usa_data_minus_3$X)
+usa_data_minus_3$final_results$single_dim_CI
 usa_data$final_results$single_dim_CI
 ```
-```{r plot US full data set model}
-x_mle <- usa_data$final_results$one_dim_params$x_matrix1$x
-vw_mle <- usa_data$final_results$one_dim_params$x_matrix1$vw
-y_mle <- usa_data$final_results$one_dim_params$x_matrix1$y
-plot(usa_data$X/ 1e5, col = 'blue' , type = 'b', pch=7, panel.first = grid(),
-     ylab = "Number of cases * 10^5", xlab = 'Days', xlim = c(0,120), lty = 1)
-lines(usa_data$VW / 1e5,col = 'blue', type = 'b', pch=13, lty = 2)
-lines(usa_data$Y / 1e5, col = 'blue', type = 'b', pch=19, lty = 3)
 
-lines(x_mle[(1:length(x_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=7, lty  = 1)
-lines(vw_mle[(1:length(vw_mle)) %% 100 == 0]/ 1e5, col = 'red', type = 'b', pch=13, lty = 2)
-lines(y_mle[(1:length(y_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=19, lty = 3)
-legend(0, 14, legend=c("X", "VW",'Y'),
-       col=c("red", "blue" ), pch=c(7,13,19))
-abline(v = which.max(vw_mle[(1:length(vw_mle)) %% 100 == 0] > y_mle[(1:length(y_mle)) %% 100 == 0]), col = 'green',
-       lwd = 2.5)
+```{r}
+str(usa_data_minus_3)
+```
+
+
+```{r plot US full data set model}
+x_mle_upper <- usa_data_minus_3$final_results$one_dim_params[[1]]$x
+vw_mle_upper <- usa_data_minus_3$final_results$one_dim_params[[1]]$vw
+y_mle_upper <- usa_data_minus_3$final_results$one_dim_params[[1]]$y
+
+x_mle_mid <- usa_data_minus_3$final_results$one_dim_params[[2]]$x
+vw_mle_mid <- usa_data_minus_3$final_results$one_dim_params[[2]]$vw
+y_mle_mid <- usa_data_minus_3$final_results$one_dim_params[[2]]$y
+
+x_mle_lower <- usa_data_minus_3$final_results$one_dim_params[[3]]$x
+vw_mle_lower <- usa_data_minus_3$final_results$one_dim_params[[3]]$vw
+y_mle_lower <- usa_data_minus_3$final_results$one_dim_params[[3]]$y
+
+length(usa_data$X) - 12
+
+plot(usa_data$X / 1e5, col = 'blue' , type = 'b', pch=7, panel.first = grid(),
+     ylab = "Number of cases * 10^5", xlab = 'Days', xlim = c(0,120), lty = 1, lwd = 2,
+     main = sprintf("Predicted (red) vs actual data (blue)"),
+     sub = sprintf("%s days removed",cutoff), cex = 0.5)
+lines(usa_data$VW / 1e5,col = 'blue', type = 'b', pch=13, lwd = 2, cex = 0.5)
+lines(usa_data$Y / 1e5, col = 'blue', type = 'b', pch=19, lwd = 2, cex = 0.5)
+
+lines(x_mle_upper[(1:length(x_mle)) %% 100 == 0] / 1e5, col = 'orange', type = 'b', pch=7, lwd = 1, cex = 0.5)
+lines(vw_mle_upper[(1:length(vw_mle)) %% 100 == 0]/ 1e5, col = 'orange', type = 'b', pch=13, lwd = 1, cex = 0.5)
+lines(y_mle_upper[(1:length(y_mle)) %% 100 == 0] / 1e5, col = 'orange', type = 'b', pch=19, lwd = 1, cex = 0.5)
+
+lines(x_mle_mid[(1:length(x_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=7, lwd = 1, cex = 0.5)
+lines(vw_mle_mid[(1:length(vw_mle)) %% 100 == 0]/ 1e5, col = 'red', type = 'b', pch=13, lwd = 1, cex = 0.5)
+lines(y_mle_mid[(1:length(y_mle)) %% 100 == 0] / 1e5, col = 'red', type = 'b', pch=19, lwd = 1, cex = 0.5)
+
+lines(x_mle_lower[(1:length(x_mle)) %% 100 == 0] / 1e5, col = 'green', type = 'b', pch=7, lwd = 1, cex = 0.5)
+lines(vw_mle_lower[(1:length(vw_mle)) %% 100 == 0]/ 1e5, col = 'green', type = 'b', pch=13, lwd = 1, cex = 0.5)
+lines(y_mle_lower[(1:length(y_mle)) %% 100 == 0] / 1e5, col = 'green', type = 'b', pch=19, lwd = 1, cex = 0.5)
+
+legend(0, 14, legend=c("X", "VW",'Y'),pch=c(7,13,19))
+abline(v = which.max(y_mle[(1:length(y_mle)) %% 100 == 0]), col = 'black',
+       lwd = 1)
+abline(v = length(usa_data$X) - 12, col = 'black', lty = 2,
+       lwd = 1)
 ```
 
 1. Plot x,y,wv vs X,Y,VW (for $\hat{K}$)

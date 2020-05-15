@@ -1,6 +1,6 @@
 GridSearchForK <- function(hhh,X,VW,Y,
                            alpha,Y_middle,X_middle, 
-                          NNN){
+                           NNN){
   K = max(X) + hhh * NNN
   n = length(X)
   T_final = T1 = matrix(0, ncol = 2, nrow = n)

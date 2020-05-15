@@ -1,4 +1,4 @@
-RunFullCycle <- function(national_data, starting_day, end_day = NULL, prediction_period = NULL,
+RunFullCycle <- function(national_data, starting_day, cut_off_day = NULL, prediction_period = NULL,
                          environment_parameter_list = NULL){
   partition_parameter = 100
   del = 1/partition_parameter # dt
@@ -8,7 +8,7 @@ RunFullCycle <- function(national_data, starting_day, end_day = NULL, prediction
   hhh_upper_limit = 400
   gamma_hat = beta_hat = matrix(nrow = calibration_loops, ncol = hhh_upper_limit)
   alpha = 0.5
-  environment_data <- DataLoader(national_data,starting_day, end_day)
+  environment_data <- DataLoader(national_data,starting_day, cut_off_day)
   X = environment_data$X
   VW = environment_data$VW
   Y = environment_data$Y

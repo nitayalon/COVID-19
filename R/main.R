@@ -1,4 +1,4 @@
-mainFunction <- function(state_name, starting_day, other_parameters = NULL){
+mainFunction <- function(state_name, starting_day, cut_off_day = NULL, other_parameters = NULL){
   confirmed_cases <- global_confirmed_cases %>% 
     select(-`Province/State`, -Lat, -Long) %>% 
     group_by(`Country/Region`) %>% 
@@ -34,6 +34,6 @@ mainFunction <- function(state_name, starting_day, other_parameters = NULL){
     select(-var) %>% 
     as.matrix()
   print('Data ready')
-  nation_wide_rtt_results <- RunFullCycle(covid_data, starting_day)
+  nation_wide_rtt_results <- RunFullCycle(covid_data, starting_day, cut_off_day)
   return(nation_wide_rtt_results)
 }
