@@ -5,6 +5,14 @@ date: "5/18/2020"
 output: html_document
 ---
 
+```{r compute K mle for US data}
+usa_llk_df <- data.frame(K = usa_data_fine_alpha_grid$grid_parameters$Var2,
+                         alpha = usa_data_fine_alpha_grid$grid_parameters$Var1,
+                         llk = -usa_data_fine_alpha_grid$OBJ - max(-usa_data_fine_alpha_grid$OBJ))
+usa_llk_df[which.max(usa_llk_df$llk),]
+length(usa_data_fine_alpha_grid$final_results)
+```
+
 
 ```{r us data}
 cutoff <- 12

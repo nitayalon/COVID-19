@@ -12,7 +12,7 @@ gridSearchMainFunction <- function(national_data, starting_day, cut_off_day = NU
   n = environment_data$n
   NNN = floor(max(X) / 100) #What is the grid of K
   hhh <- 1:hhh_upper_limit
-  alpha_grid = seq(0.4,0.6,length.out = 100)
+  alpha_grid = seq(0.2,0.8,length.out = 100)
   k_grid <- max(X) + hhh * NNN
   grid_parameters <- expand.grid(alpha_grid,k_grid)
   print("Starting grid search")

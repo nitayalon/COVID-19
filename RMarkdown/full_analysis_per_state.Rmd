@@ -1,0 +1,91 @@
+---
+title: "Interim report"
+author: "Nitay Alon"
+date: "May 15, 2020"
+output: html_document
+---
+
+Sweden - check after day 70, explore the data some more
+France - report separately 
+Italy - validate that 52 and 60 makes no difference
+Germany - check after 70
+Chile - Validate the diff between 60 and 70
+
+```{r load environment libraries}
+library(dplyr)
+library(tidyverse)
+library(plotly)
+library(ggplot2)
+```
+
+```{r US grid search}
+usa_data_fine_alpha_grid <- mainFunction('US',60)
+str(usa_data_fine_alpha_grid$final_results)
+
+
+likelihood_mtrix <- matrix(usa_data_fine_alpha_grid$OBJ, nrow = length(unique(usa_data_fine_alpha_grid$grid_parameters$Var2)),
+                           ncol =length(unique(usa_data_fine_alpha_grid$grid_parameters$Var1)), byrow = T)
+
+minimal_llk_per_k <- apply(likelihood_mtrix, 1, min)
+minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
+minimal_llk_per_alpha <- apply(likelihood_mtrix, 2, min)
+minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
+
+plot(unique(usa_data_fine_alpha_grid$grid_parameters$Var2),minimal_llk_per_k, ylab = '-llk', xlab='K', type = 'l')
+plot(unique(usa_data_fine_alpha_grid$grid_parameters$Var1),minimal_llk_per_alpha, ylab = '-llk', xlab='Alpha', type = 'l',
+     main = 'Profile likelihood of Alpha', sub = 'USA')
+abline(h = -3, col = 'red', lty = 2)
+```
+
+```{r refining the k plot}
+refine_k_grid <- unique(usa_data_fine_alpha_grid$grid_parameters$Var2)[minimal_llk_per_k > -10]
+refine_llk_k <- minimal_llk_per_k[minimal_llk_per_k > -10]
+plot(refine_k_grid,refine_llk_k, ylab = '-llk', xlab='K', type = 'l', main = 'Profile likelihood of K', sub = 'USA')
+abline(h = -3, col = 'red', lty = 2)
+```
+
+```{r alpha K regression}
+alpha_min <- unique(usa_data_fine_alpha_grid$grid_parameters$Var1)[apply(likelihood_mtrix, 1, which.min)]
+K_min <- unique(usa_data_fine_alpha_grid$grid_parameters$Var2)[apply(likelihood_mtrix, 2, which.min)]
+
+alpha_vs_k_linear_model <- lm(alpha_min ~ unique(usa_data_fine_alpha_grid$grid_parameters$Var2))
+K_vs_alpha_linear_model <- lm(K_min ~ unique(usa_data_fine_alpha_grid$grid_parameters$Var1))
+
+sqrt(alpha_vs_k_linear_model$coefficients[2] * K_vs_alpha_linear_model$coefficients[2])
+```
+
+```{r}
+italy_data_fine_alpha_grid <- mainFunction('Italy',60)
+```
+
+
+```{r US grid search}
+likelihood_matrix_italy <- matrix(italy_data_fine_alpha_grid$OBJ, nrow = length(unique(italy_data_fine_alpha_grid$grid_parameters$Var2)),
+                           ncol =length(unique(italy_data_fine_alpha_grid$grid_parameters$Var1)), byrow = T)
+
+minimal_llk_per_k <- apply(likelihood_matrix_italy, 1, min)
+minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
+minimal_llk_per_alpha <- apply(likelihood_matrix_italy, 2, min)
+minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
+
+plot(unique(italy_data_fine_alpha_grid$grid_parameters$Var1),minimal_llk_per_alpha, ylab = '-llk', xlab='Alpha', type = 'l',
+     main = 'Profile likelihood of Alpha', sub = 'Italy')
+abline(h = -3, col = 'red', lty = 2)
+```
+
+```{r refining the k plot}
+refine_k_grid <- unique(italy_data_fine_alpha_grid$grid_parameters$Var2)[minimal_llk_per_k > -10]
+refine_llk_k <- minimal_llk_per_k[minimal_llk_per_k > -10]
+plot(refine_k_grid,refine_llk_k, ylab = '-llk', xlab='K', type = 'l', main = 'Profile likelihood of K', sub = 'Italy')
+abline(h = -3, col = 'red', lty = 2)
+```
+
+```{r alpha K regression}
+alpha_min <- unique(italy_data_fine_alpha_grid$grid_parameters$Var1)[apply(likelihood_mtrix, 1, which.min)]
+K_min <- unique(italy_data_fine_alpha_grid$grid_parameters$Var2)[apply(likelihood_mtrix, 2, which.min)]
+
+alpha_vs_k_linear_model <- lm(alpha_min ~ unique(italy_data_fine_alpha_grid$grid_parameters$Var2))
+K_vs_alpha_linear_model <- lm(K_min ~ unique(italy_data_fine_alpha_grid$grid_parameters$Var1))
+
+sqrt(alpha_vs_k_linear_model$coefficients[2] * K_vs_alpha_linear_model$coefficients[2])
+```
