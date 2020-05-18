@@ -1,11 +1,11 @@
-GridSearchForK <- function(hhh,X,VW,Y,
-                           alpha,Y_middle,X_middle, 
-                           NNN){
-  K = max(X) + hhh * NNN
+GridSearchInnerLoop <- function(X,VW,Y,
+                           alpha,K,del,
+                           Y_middle,X_middle,partition_parameter){
   n = length(X)
+  browser()
   T_final = T1 = matrix(0, ncol = 2, nrow = n)
   inner_calibration_loop <- InnerCalibrationLoop(K, n, X,VW,Y,
-                                                 alpha,Y_middle,X_middle)
+                                                 alpha,Y_middle,X_middle,partition_parameter,del)
   beta <- inner_calibration_loop$beta
   gamma <- inner_calibration_loop$gamma
   beta_hat <- inner_calibration_loop$beta_hat

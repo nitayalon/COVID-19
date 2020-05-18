@@ -1,4 +1,3 @@
-library(tidyverse)
 DataLoader <- function(covid_data, starting_day,cut_off_day= NULL)
 {
   min_feasible_date <- which.max(apply(covid_data, 1, function(x){all(x > 0)}))

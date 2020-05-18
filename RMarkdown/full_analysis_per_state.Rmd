@@ -11,17 +11,36 @@ Italy - validate that 52 and 60 makes no difference
 Germany - check after 70
 Chile - Validate the diff between 60 and 70
 
+```{r load environment libraries}
+library(dplyr)
+library(tidyverse)
+library(plotly)
+library(ggplot2)
+```
+
+
 ```{r us data}
 cutoff <- 12
-usa_data <- mainFunction('US',60)
+debug(mainFunction)
+usa_data_fine_alpha_grid <- mainFunction('US',60)
+plot(usa_data$OBJ)
 usa_data_minus_3 <- mainFunction('US',60, 12)
 max(usa_data_minus_3$X)
 usa_data_minus_3$final_results$single_dim_CI
 usa_data$final_results$single_dim_CI
 ```
 
-```{r}
-str(usa_data_minus_3)
+```{r plot profile likelihood}
+alpha_grid = seq(0.1,0.9,0.01)
+hhh_upper_limit = 200
+NNN = floor(max(usa_data$X) / 100)
+hhh <- 1:hhh_upper_limit
+k_grid <- max(usa_data$X) + hhh * NNN
+grid_parameters <- expand.grid(alpha_grid,k_grid)
+profile_likelihood_data <- data.frame(llk = usa_data$OBJ, alpha = grid_parameters$Var1, K = grid_parameters$Var2)
+ggplot(profile_likelihood_data, aes(x = K, y = llk , col = factor(alpha))) +
+  geom_line() + 
+  ggtitle("Profile likelihood of K")
 ```
 
 
