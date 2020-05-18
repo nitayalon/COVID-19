@@ -1,28 +1,13 @@
 ---
-title: "Interim report"
+title: "COVID19 projection analysis"
 author: "Nitay Alon"
-date: "May 15, 2020"
+date: "5/18/2020"
 output: html_document
 ---
-
-Sweden - check after day 70, explore the data some more
-France - report separately 
-Italy - validate that 52 and 60 makes no difference
-Germany - check after 70
-Chile - Validate the diff between 60 and 70
-
-```{r load environment libraries}
-library(dplyr)
-library(tidyverse)
-library(plotly)
-library(ggplot2)
-```
 
 
 ```{r us data}
 cutoff <- 12
-debug(mainFunction)
-usa_data_fine_alpha_grid <- mainFunction('US',60)
 plot(usa_data$OBJ)
 usa_data_minus_3 <- mainFunction('US',60, 12)
 max(usa_data_minus_3$X)
@@ -104,3 +89,4 @@ UK <- 70
 France <- 65
 Sweden <- 65
 ```
+

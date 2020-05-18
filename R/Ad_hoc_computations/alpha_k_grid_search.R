@@ -20,7 +20,7 @@ gridSearchMainFunction <- function(national_data, starting_day, cut_off_day = NU
   for(i in 1:nrow(grid_parameters)){
     grid_search_results[[i]] <- GridSearchInnerLoop(X,VW,Y,grid_parameters$Var1[i],
                                                     grid_parameters$Var2[i],del,Y_middle,X_middle,partition_parameter)
-    if(i %% 500 == 0){print(sprintf('Iteration number %s',i))}
+    if(i %% 500 == 0){print(sprintf('Proportion %s',i/nrow(grid_parameters)))}
   }
   COV <- lapply(grid_search_results, function(x){x$COV})
   OBJ <- sapply(grid_search_results, function(x){x$OBJ})

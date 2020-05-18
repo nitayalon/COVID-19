@@ -2,7 +2,6 @@ GridSearchInnerLoop <- function(X,VW,Y,
                            alpha,K,del,
                            Y_middle,X_middle,partition_parameter){
   n = length(X)
-  browser()
   T_final = T1 = matrix(0, ncol = 2, nrow = n)
   inner_calibration_loop <- InnerCalibrationLoop(K, n, X,VW,Y,
                                                  alpha,Y_middle,X_middle,partition_parameter,del)
@@ -35,10 +34,7 @@ GridSearchInnerLoop <- function(X,VW,Y,
   LOGL=log(det(COV))
   VAR1=mean(diag(COV))
   OBJB=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
-  return(list(x = x,
-              y = y,
-              vw = vw,
-              TT = TT,
+  return(list(TT = TT,
               K = K,
               beta = beta,
               gamma = gamma,

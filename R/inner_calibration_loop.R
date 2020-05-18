@@ -34,17 +34,15 @@ InnerCalibrationLoop <- function(K,n,X,VW,Y,
   BD = gamma * Y_middle
   OBJ1=sum(log(AD)+log(BD)) #single figure - denom
   OBJ=OBJ1+(n/2)*log(det(COV)) # likelihood when we use two BM's
-  LOGL=log(det(COV))
-  VAR1=mean(diag(COV))
+  # LOGL=log(det(COV))
+  # VAR1=mean(diag(COV))
   OBJB=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
   
-  return(list(x = x,
-              vw = vw,
-              y = y,
-              T1 = T1,
+  return(list(
               TT = TT,
               COV = COV,
               OBJ = OBJ,
+              OBJB = OBJB,
               beta = beta,
               gamma = gamma,
               beta_hat = beta_hat,
