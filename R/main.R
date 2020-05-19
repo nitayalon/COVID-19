@@ -35,6 +35,6 @@ mainFunction <- function(state_name, starting_day, cut_off_day = NULL, other_par
     select(-var) %>% 
     as.matrix()
   print('Data ready')
-  nation_wide_rtt_results <- gridSearchMainFunction(covid_data, starting_day, cut_off_day)
+  nation_wide_rtt_results <- RunFullCycle(covid_data, starting_day, cut_off_day)
   return(nation_wide_rtt_results)
 }

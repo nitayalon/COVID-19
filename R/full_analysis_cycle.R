@@ -1,7 +1,7 @@
 RunFullCycle <- function(national_data, starting_day, cut_off_day = NULL, prediction_period = NULL,
                          environment_parameter_list = NULL){
   partition_parameter = 100
-  del = 1/partition_parameter # dt
+  del = 1 / partition_parameter # dt
   asympt = c()
   LOGL = VAR1 = OBJ = OBJB = c()
   calibration_loops = 15
