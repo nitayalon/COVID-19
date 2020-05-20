@@ -1,0 +1,284 @@
+%\documentclass[handout]{beamer}
+\documentclass[notes]{beamer}
+
+%\setbeameroption{show notes} 
+\setbeameroption{hide notes}
+
+%\usepackage{pgfpages}
+%\setbeameroption{show notes on second screen=right}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\mode<presentation>{
+\usetheme{Madrid}
+}
+\setbeamertemplate{footline}[frame number]
+\usepackage{silence,lmodern}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{bbm}
+\usepackage{array}
+%\usepackage{bibentry}
+\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{arrows,positioning} 
+\usetikzlibrary{matrix}
+\usepackage{graphicx}
+\graphicspath{{Figs/}}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+\title{Random time transformation analysis of the Covid19 Pandemic 2020}
+\author{
+Nitay Alon,
+Isaac Meilijson
+}
+\institute{Israel Statistical Association \\
+Virtual workshop on statistical aspects of the SARS-CoV-2 pandemic}
+\date{May 21, 2020}
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\frame{\titlepage}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{SIR model introduction}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{SIR epidemiological model}
+	\noindent $S(t) = K - X(t)$ susceptible cases at time $t$ 
+
+    \noindent $X(t)$ affected cases, $K$ usually population size $N$
+
+    \noindent $R(t)$ removed cases (dead $+$ recovered)
+
+    \noindent $I(t)=X(t)-R(t)$ infected cases
+
+%The common formulation of the SIR (Susceptible, Infected, Removed) epidemiological model is the variant of the system of ODE
+    \begin{eqnarray}
+    dX(t) & = & \beta(t) g(I(t)) (1 - X(t)/K) dt \nonumber \\
+    dR(t) & = & \gamma I(t) \nonumber dt \\
+    I(t) & = & X(t)-R(t) \nonumber
+    \end{eqnarray}
+where $K=N$ and $g(x)=x$. Or else.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{SIR epidemiological model}
+	\noindent $\beta(t)$ smoothly estimated from $X$-increments and $I$.
+    \noindent Ratio $R_0=\frac{\beta(t)}{\gamma}$ of primary importance, transition from above to below $1$ $=$ epidemic spreading or dwindling $=$ infected cases $I$ increase or decrease with time.
+    \noindent At early stages of epidemic, substitution of $K$ by population size $N$ or $\infty$, has similar effects. 
+    \noindent Will illustrate on Covid19 2020 that if $K$ free parameter, SIR system accepts almost exact solution with $\beta$ (not only $\gamma$) constant, $K$ is asymptote of $X$, {\bf if conditions prevalent at monitoring stage stay in effect}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \frametitle{SIR epidemiological model}
+	\noindent Linear appearance of susceptibles in $dX$ and infected in $dR$ quite straightforward under stationary regime, but role of $I(t)$ in $dX$ needs attention. Effective vicinity of susceptibles need not be entire infected cohort, and asymptote of affected cases need not be population size $N$.
+    \noindent "As if known" $g$ may provide unjustifiably accurate estimates of asymptote $K$. $g(x)=x^\alpha$ for some  $\alpha<1$ repeatedly suggested (Bj{\o}rnstad, Finkenst\"{a}dt and Grenfell and references therein).
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+    \noindent $\alpha$ estimated with $K$ (and $(\beta, \gamma)$). Even if $\hat{K}$ and $\hat{\alpha}$ were uncorrelated (same marginal and conditional SE of $\hat{K}$), $K$ may be sensitive to choice of $\alpha$:  Ill-advised to set a compromise value for all countries.
+    \noindent For now, $K$ estimated by MLE $\hat{K}$ country by country. Empirical Bayes planned.
+    \noindent Model $g(x)=x^\alpha$ adopted, uncertainty due to  questioning model ignored.
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Covid19 2020 country by country}
+      measures taken March to May 2020 induced stationary behavior, with $K$ significantly finite, below $3X$  number of affected cases in mid May 2020.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+         \hline
+    Parameter  & Lower Bound & MLE & Upper Bound  \\   
+         \hline
+    K ($X_{max} = 221216$) &  241881 & 248714 &  255547 \\        
+         \hline
+    $\alpha$ &  0.680 & 0.560 & 0.425 \\        
+         \hline
+    $\beta$ & 489.61 & 449.83 & 420.40 \\
+         \hline
+    $\gamma * 100$ &2.706 & 2.783 & 2.846 \\
+         \hline
+    \end{tabular}
+    \caption{CI for $K$ Italy}
+    \label{tab:ci_italy}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+         \hline
+    Parameter  & Lower Bound & MLE & Upper Bound    \\ 
+         \hline
+    K ($X_{max} = 1369376$) &  1777533 & 2021608  & 2265682 \\        
+              \hline
+  $\alpha$ &  0.585 & 0.515 & 0.455 \\        
+         \hline
+    $\beta$ & 76.39 & 68.99 & 64.70 \\
+         \hline
+    $\gamma * 100$ & 0.989 & 1.051 & 1.093 \\
+         \hline
+    \end{tabular}
+    \caption{CI for $K$ USA}
+    \label{tab:ci_usa}
+\end{table}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Profile likelihood}
+\begin{columns}[t]
+        \column{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.25]{Figures/profile_likelihood_alpha_italy.png}
+        \\
+        \includegraphics[scale=0.25]{Figures/profile_likelihood_alpha_usa.png}
+        \column{.5\textwidth}
+        \centering
+        \includegraphics[scale=0.25]{Figures/profile_likelihood_k_italy.png}
+        \\
+        \includegraphics[scale=0.25]{Figures/profile_likelihood_k_usa.png}
+\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Trajectories - Italy}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{Figures/covid_19_trajectories_italy.png}
+    \caption{Italy, 60 days of measurement}
+    \label{fig:italy_covid_19_trajectories}
+\end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Trajectories - USA}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{Figures/predicted_trajectories_usa.png}
+    \caption{USA, 60 days of measurement}
+    \label{fig:usa_covid_19_trajectories}
+\end{figure}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\noindent How to solve SIR system and estimate parameters? Least Squares, Diffusion methods with Fokker-Planck transition density. Tough, especially with multiple equations.
+
+\bigskip
+
+Purpose: introduce RTT of Bassan, Marcus, M., Talpaz (1997), Volcani
+Institute viral spread in plants. Based on Skew Products in Ergodic Theory
+\end{frame}
+
+\begin{frame}
+\frametitle{RTT method to solve ODE with noisy data} 
+\bigskip
+
+\noindent Mimic and use solution to the system of deterministic DE: simpler, conceptually and practically different from more common SDE based on Diffusion processes.
+
+\bigskip
+
+\noindent Diffusion methods place noise vertically, RTT adopts solution to deterministic ODE, but evaluated at a random time process that advances on the average like chronological time. So noise is horizontal. 
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\noindent Random time is modelled in practice as if it was Brownian Motion (or Ornstein-Uhlenbeck). 
+
+\bigskip
+
+\noindent This provides a likelihood model for estimation of parameters inherent in SIR (or otherwise) ODE. 
+
+\bigskip
+
+\noindent The terms $g(I(t)) (1 - X(t)/K)$ and $I(t)$ identify the Jacobian term in the likelihood function, which plays a role of penalized Least Squares favoring  smoothness.
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\noindent For fixed $K$ and $\alpha$, RTT identifies $\beta$ and $\gamma$ directly, without reference to the Gaussian part. 
+
+\noindent The likelihood model to be described thus provides a profile likelihood in terms of $K$ and $\alpha$ only.
+
+\bigskip
+
+\noindent Empirical data $(X_1,R_1), (X_2,R_2), \dots, (X_n, R_n)$, with infected case totals $Y_j=X_j-R_j$. 
+
+\bigskip
+
+\noindent For fixed $K, \alpha, \beta, \gamma$ write ODE deterministic solution $(x,r)$ numerically, with initial values $X_1$ and $R_1$ and time scale $M$ (say, $100$) per day. Let $\delta=\frac{1}{M}$.   
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\begin{eqnarray}
+x(j)&=&x(j-1)+\beta g(i(j-1))(1-{\frac{x(i-1)}{K}}) \delta \nonumber \\
+r(j)&=&r(j-1)+\gamma i(j-1) \delta \nonumber \\
+i(j)&=&x(j)-r(j)\nonumber
+\end{eqnarray}
+
+\bigskip
+
+\noindent Define the {\em random time trajectory} as starting as $T_1(1)=1, T_2(1)=1$. For $m \ge 2$,
+
+\bigskip
+
+\noindent $T_1(m)$ is smallest $j$ with $x(j) \ge X_j$ and $T_2(m)$ smallest $j$ with $r(j) \ge R_j$.
+
+\bigskip
+
+\noindent Solve for $\beta$ and $\gamma$ so that $T_1(n)=T_2(n)=n$. 
+
+\noindent Incremental time has average $1$ in both equations. 
+
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\noindent The centered increments of the $T_1$ and $T_2$ processes
+
+\bigskip
+
+\noindent $\Delta_1(m)=T_1(m+1)-T_1(m)-1$ 
+
+\noindent $\Delta_2(m)=T_2(m+1)-T_2(m)-1$
+
+\noindent viewed as observations from a mean-zero BVN and emp cov matrix $\Sigma$ estimates the covariance.
+Normal density proportional to $(\det(\Sigma))^{-{\frac{n-1}{2}}}$.
+
+Jacobian is $1$ over product over sample of differential terms $\beta g(X_m-R_m)(1-X_m/K)$ and $\gamma (X_m-R_m)$.
+
+\bigskip
+
+\noindent $K$ and $\alpha$ MLE-estimated by this profile likelihood, standard errors from empirical Fisher information.
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+Thanks are due to Ilan Eshel from prompting this study and to Eytan Ruppin, Amit Huppert, David Steinberg, Vahid Bokharaie for helpful suggestions.
+
+\baselineskip= 28pt
+
+\begin{thebibliography}{99}
+
+\bibitem{Bassanetal} Bassan, B., Marcus, R., Meilijson, I. and Talpaz, H. (1997). Parameter erstimation in differential equations, using random time transformations. {\em Journal of the Italian Statistical Society}, {\bf 6}, 177--199.
+
+\bibitem{AAA} Grenfell, B.T., Bj{\o}rnstad, O.N. and Filkenst\"{a}dt, B. A. (2002) Dynamics of Measlres epidemics: scaling, noise, determinism and predictability with the TSIR model. {\em Ecological Monographs}, {\bf 72(2)}, 185-–202.
+
+\bibitem{BBB} Alon N. (2019), The effect of drift change on Skorohod embedded distribution with applications in Finance, Master's Thesis, Tel Aviv University
+	
+\end{thebibliography}
+\end{frame}
+
+\end{document}
