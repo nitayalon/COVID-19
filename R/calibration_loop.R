@@ -22,6 +22,8 @@ GridSearchInnerLoop <- function(X,VW,Y,
     T1[i,1] = sum(x<=X[i])
     T1[i,2] = sum(vw<=VW[i])
   }
+  T1[,1]=T1[,1]+(X-x[T1[,1]])/(x[T1[,1]+1]-x[T1[,1]])
+  T1[,2]=T1[,2]+(VW-vw[T1[,2]])/(vw[T1[,2]+1]-vw[T1[,2]])
   T_final=T1*del
   TT=diff(T_final)-1
   COV=t(TT)%*%TT/(n-1)

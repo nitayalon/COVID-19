@@ -1,4 +1,4 @@
-mainFunction <- function(state_name, starting_day, cut_off_day = NULL, other_parameters = NULL){
+mainFunction <- function(state_name, starting_day, population, cut_off_day = NULL, other_parameters = NULL){
   
   confirmed_cases <- global_confirmed_cases %>% 
     select(-`Province/State`, -Lat, -Long) %>% 
@@ -35,6 +35,6 @@ mainFunction <- function(state_name, starting_day, cut_off_day = NULL, other_par
     select(-var) %>% 
     as.matrix()
   print('Data ready')
-  nation_wide_rtt_results <- gridSearchMainFunction(covid_data, starting_day, cut_off_day)
+  nation_wide_rtt_results <- gridSearchMainFunction(covid_data, population, starting_day, cut_off_day)
   return(nation_wide_rtt_results)
 }
