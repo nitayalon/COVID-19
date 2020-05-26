@@ -13,7 +13,7 @@ gridSearchMainFunction <- function(national_data, population, starting_day, cut_
   hhh_lower_limit = 1
   NNN = floor(max(X) / 100) #What is the grid of K
   hhh <- seq(hhh_lower_limit, hhh_upper_limit, length.out = 40)
-  alpha_grid = seq(0.2,0.8,length.out = 40)
+  alpha_grid = seq(0.5,1.0,length.out = 40)
   k_grid <- c(max(X) + hhh * NNN, population)
   outer_grid_parameters <- expand.grid(alpha_grid,k_grid)
   print("Starting outer grid search")
