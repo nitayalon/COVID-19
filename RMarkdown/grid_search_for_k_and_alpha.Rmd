@@ -20,23 +20,23 @@ library(ggplot2)
 
 
 ```{r chile data analysis}
-state <- 'Brazil'
+state <- 'Germany'
 load(sprintf('../R/Ad_hoc_computations/grid_search_results/%s.RData',state))
 
 likelihood_matrix <- matrix(grid_search_results$OBJ, nrow = length(unique(grid_search_results$inner_grid_parameters$Var2)),
                            ncol = length(unique(grid_search_results$inner_grid_parameters$Var1)), byrow = T)
 
-minimal_llk_per_k <- apply(likelihood_matrix, 1, min)
+minimal_llk_per_k <- apply(grid_search_results$inner_grid_llk_matrix, 1, min)
 minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
-minimal_llk_per_alpha <- apply(likelihood_matrix, 2, min)
+minimal_llk_per_alpha <- apply(grid_search_results$inner_grid_llk_matrix, 2, min)
 minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
 
 plot(unique(grid_search_results$inner_grid_parameters$Var1),minimal_llk_per_alpha, ylab = '-llk', xlab='Alpha', type = 'l',
      main = 'Profile likelihood of Alpha', sub = state)
 abline(h = -3, col = 'red', lty = 2)
 
-refine_k_grid <- unique(grid_search_results$inner_grid_parameters$Var2)[minimal_llk_per_k > -20]
-refine_llk_k <- minimal_llk_per_k[minimal_llk_per_k > -20]
+refine_k_grid <- unique(grid_search_results$inner_grid_parameters$Var2)
+refine_llk_k <- minimal_llk_per_k
 plot(refine_k_grid,refine_llk_k, ylab = '-llk', xlab='K', type = 'l', main = 'Profile likelihood of K', sub = state)
 abline(h = -3, col = 'red', lty = 2)
 abline(h = 0, col = 'red', lty = 2)

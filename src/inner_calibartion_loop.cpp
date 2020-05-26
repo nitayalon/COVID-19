@@ -33,33 +33,32 @@ NumericMatrix innerLoop(int n,
   return results;
 }
 
-List InnerCalibrationLoop(double K, int n,int NumberOfIterations, 
+// [[Rcpp::export]]
+List InnerCalibrationLoopRcpp(
+              double Beta,
+              double Gamma,
+              double K, 
+              int n,
+              int NumberOfIterations, 
                NumericVector X, 
                NumericVector VW, 
                NumericVector Y, 
                double Alpha,
                NumericVector X_Middle, 
                NumericVector Y_Middle,
-               int PartitonParameter,
                double Del,
-               int calibration_loops = 15){
+               int calibration_loops){
   List results(5);
-  NumericVector power_y (Y_Middle.size());
-  for(int i = 0 ; i < Y_Middle.size() ; i ++){
-    power_y(i) = std::pow(Y_Middle(i), Alpha);
-  }
-  double beta = (X(n)-X(1)) / sum(pmax(1,power_y  - power_y(0)) * (1 - (X_Middle-X_Middle(0)) / K));
-  double gamma = (VW(n)-VW(1)) / sum(pmax(1,Y_Middle-Y_Middle(0)));
   NumericMatrix beta_hat(n,1);
   NumericMatrix gamma_hat(n,1);
   NumericMatrix T_final (n,2);
   NumericMatrix T1 (n,2);
   
   for(int j = 0; j < calibration_loops; j++){
-    NumericMatrix inner_loop_results = innerLoop(n, NumberOfIterations, beta, gamma, Del, Alpha, K, X(0), VW(0),Y(0));
-    NumericVector x = round(inner_loop_results(_ , 0),7);
-    NumericVector vw = round(inner_loop_results(_ , 1),7);
-    NumericVector y = round(inner_loop_results(_ , 2),7);
+    NumericMatrix inner_loop_results = innerLoop(n, NumberOfIterations, Beta, Gamma, Del, Alpha, K, X(0), VW(0),Y(0));
+    NumericVector x = round(inner_loop_results(0 , _),7);
+    NumericVector vw = round(inner_loop_results(1 , _),7);
+    NumericVector y = round(inner_loop_results(2 , _),7);
     // random time transformation
     // The events where the pde solution equals to the emphirical values
     for(int i=0; i < n; i++)
@@ -73,15 +72,17 @@ List InnerCalibrationLoop(double K, int n,int NumberOfIterations,
       T1(i,1) = T1(i,1) + (VW[i]-vw[T1(i,1)])/(vw[T1(i,1)+1]-vw[T1(i,1)]);
     }
     T1=T1 * Del;
-    beta = beta * T1(n-1,0)/n;
-    gamma = gamma * T1(n-1,1)/n;
-    beta_hat[j] = beta;
-    gamma_hat[j] = gamma;
+    Beta = Beta * T1((n-1), 0) / n;
+    Gamma = Gamma * T1((n-1), 1) / n;
+    beta_hat[j] = Beta;
+    gamma_hat[j] = Gamma;
   }
-  results[0] = beta;
-  results[1] = gamma;
+  NumericMatrix inner_loop_results = innerLoop(n, NumberOfIterations, Beta, Gamma, Del, Alpha, K, X(0), VW(0),Y(0));
+  results[0] = Beta;
+  results[1] = Gamma;
   results[2] = beta_hat;
   results[3] = gamma_hat;
-  
+  results[4] = T1;
+
   return results;
 }
