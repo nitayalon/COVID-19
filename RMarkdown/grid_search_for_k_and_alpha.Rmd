@@ -28,7 +28,7 @@ trajectories <- lapply(1:3, function(i){predictCovidTrajectory(grid_search_resul
 ```
 
 ```{r plot Germany data}
-
+dates <- seq(as.Date('01/'))
 ```
 
 
