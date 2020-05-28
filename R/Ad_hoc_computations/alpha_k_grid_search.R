@@ -32,20 +32,19 @@ gridSearchMainFunction <- function(national_data,
   likelihood_matrix <- matrix(OBJ, nrow = length(unique(outer_grid_parameters$Var2)),
                               ncol = length(unique(outer_grid_parameters$Var1)), byrow = T)
   
-  minimal_llk_per_k <- apply(likelihood_matrix, 1, min)
+  minimal_llk_per_k <- apply(likelihood_matrix, 1, function(x){min(x,na.rm = T)})
   minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
-  minimal_llk_per_alpha <- apply(likelihood_matrix, 2, min)
+  minimal_llk_per_alpha <- apply(likelihood_matrix, 2, function(x){min(x,na.rm = T)})
   minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
-  browser()
   lower_alpha_inner_grid <- max(alpha_grid[which.max(minimal_llk_per_alpha)] - 0.2, 0.0)
   upper_alpha_inner_grid <- min(alpha_grid[which.max(minimal_llk_per_alpha)] + 0.2, 1.0)
   inner_alpha_grid <- seq(lower_alpha_inner_grid ,upper_alpha_inner_grid,length.out = 20)
   
-  lower_inner_k_grid <- max(k_grid[which.max(minimal_llk_per_k) - 1], min(k_grid), na.rm = T)
-  upper_inner_k_grid <- min(k_grid[which.max(minimal_llk_per_k) + 1],population,na.rm = T)
+  lower_inner_k_grid <- max(k_grid[which.max(minimal_llk_per_k) - 2], min(k_grid), na.rm = T)
+  upper_inner_k_grid <- min(k_grid[which.max(minimal_llk_per_k) + 2],population,na.rm = T)
   inner_k_grid <- seq(lower_inner_k_grid, upper_inner_k_grid, length.out = 40)
   
-  inner_grid_parameters <- expand.grid(inner_alpha_grid,inner_k_grid)
+  inner_grid_parameters <- expand.grid(alpha_grid,inner_k_grid)
   print("Starting inner grid search")
   inner_grid_search_results <- pblapply(1:nrow(inner_grid_parameters), function(i){GridSearchInnerLoop(X,VW,Y,inner_grid_parameters$Var1[i],
                                                                                                  inner_grid_parameters$Var2[i],del,Y_middle,X_middle,partition_parameter)})
@@ -57,17 +56,19 @@ gridSearchMainFunction <- function(national_data,
   inner_likelihood_matrix <- matrix(OBJ_inner, nrow = length(unique(inner_grid_parameters$Var2)),
                               ncol = length(unique(inner_grid_parameters$Var1)), byrow = T)
   
-  inner_minimal_llk_per_k <- apply(inner_likelihood_matrix, 1, min)
+  inner_minimal_llk_per_k <- apply(inner_likelihood_matrix, 1, function(x){min(x,na.rm = T)})
   inner_minimal_llk_per_k <- -inner_minimal_llk_per_k - max(-inner_minimal_llk_per_k)
-  inner_minimal_llk_per_alpha <- apply(inner_likelihood_matrix, 2, min)
+  inner_minimal_llk_per_alpha <- apply(inner_likelihood_matrix, 2, function(x){min(x,na.rm = T)})
   inner_minimal_llk_per_alpha <- -inner_minimal_llk_per_alpha - max(-inner_minimal_llk_per_alpha)
-  
-  return(list(outer_grid_parameters = outer_grid_parameters,
+  K_CI <- c(inner_k_grid[min(which(inner_minimal_llk_per_k > -2.5))],inner_k_grid[max(which(inner_minimal_llk_per_k > -2.5))])
+  alpha_CI <- c(alpha_grid[which.min(inner_likelihood_matrix[min(which(inner_minimal_llk_per_k > -2.5)),])],
+                alpha_grid[which.min(inner_likelihood_matrix[max(which(inner_minimal_llk_per_k > -2.5)),])])
+  return(list(environment_data = environment_data,
               inner_grid_parameters = inner_grid_parameters,
-              environment_data = environment_data,
-              COV_matrix = COV_inner,
-              OBJ = OBJ_inner,         
-              OBJB = OBJB_inner,         
-              outer_grid_llk_matrix = likelihood_matrix,
-              inner_grid_llk_matrix = inner_likelihood_matrix))
+              inner_grid_llk_matrix = inner_likelihood_matrix,
+              mle_K = inner_k_grid[which.max(inner_minimal_llk_per_k)],
+              mle_alpha = inner_alpha_grid[which.max(inner_minimal_llk_per_k)],
+              K_CI = K_CI, 
+              alpha_CI = alpha_CI
+              ))
 }

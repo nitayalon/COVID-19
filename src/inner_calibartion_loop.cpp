@@ -9,9 +9,9 @@ NumericMatrix innerLoop(int n,
                         int NumberOfIterations, double Beta, double Gamma, double Del, double Alpha, double K, double x,
                         double vw, double y){
   int m = NumberOfIterations * 5 * n;
-  NumericVector xnew (m);
-  NumericVector vwnew (m);
-  NumericVector ynew (m);
+  NumericVector xnew(m);
+  NumericVector vwnew(m);
+  NumericVector ynew(m);
   //Initilization
   for(int i=0; i < NumberOfIterations; i ++){
     xnew[i] = x;
@@ -44,21 +44,18 @@ List InnerCalibrationLoopRcpp(
                NumericVector VW, 
                NumericVector Y, 
                double Alpha,
-               NumericVector X_Middle, 
-               NumericVector Y_Middle,
                double Del,
                int calibration_loops){
   List results(5);
-  NumericMatrix beta_hat(n,1);
-  NumericMatrix gamma_hat(n,1);
-  NumericMatrix T_final (n,2);
+  NumericVector beta_hat(calibration_loops);
+  NumericVector gamma_hat(calibration_loops);
   NumericMatrix T1 (n,2);
   
   for(int j = 0; j < calibration_loops; j++){
     NumericMatrix inner_loop_results = innerLoop(n, NumberOfIterations, Beta, Gamma, Del, Alpha, K, X(0), VW(0),Y(0));
-    NumericVector x = round(inner_loop_results(0 , _),7);
-    NumericVector vw = round(inner_loop_results(1 , _),7);
-    NumericVector y = round(inner_loop_results(2 , _),7);
+    NumericVector x = inner_loop_results(0 , _);
+    NumericVector vw = inner_loop_results(1 , _);
+    NumericVector y = inner_loop_results(2 , _);
     // random time transformation
     // The events where the pde solution equals to the emphirical values
     for(int i=0; i < n; i++)

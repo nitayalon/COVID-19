@@ -19,27 +19,16 @@ library(ggplot2)
 ```
 
 
-```{r chile data analysis}
+```{r Germany grid search}
 state <- 'Germany'
 grid_search_results <- mainFunction(state,60, population_list[[state]])
+K_grid <- c(grid_search_results$K_CI[1], grid_search_results$mle_K, grid_search_results$K_CI[2])
+alpha_grid <- c(grid_search_results$alpha_CI[1], grid_search_results$mle_alpha, grid_search_results$alpha_CI[2])
+trajectories <- lapply(1:3, function(i){predictCovidTrajectory(grid_search_results$environment_data, K_grid[i], alpha_grid[i])})
+```
 
-likelihood_matrix <- matrix(grid_search_results$OBJ, nrow = length(unique(grid_search_results$inner_grid_parameters$Var2)),
-                           ncol = length(unique(grid_search_results$inner_grid_parameters$Var1)), byrow = T)
+```{r plot Germany data}
 
-minimal_llk_per_k <- apply(grid_search_results$inner_grid_llk_matrix, 1, min)
-minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
-minimal_llk_per_alpha <- apply(grid_search_results$inner_grid_llk_matrix, 2, min)
-minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
-
-plot(unique(grid_search_results$inner_grid_parameters$Var1),minimal_llk_per_alpha, ylab = '-llk', xlab='Alpha', type = 'l',
-     main = 'Profile likelihood of Alpha', sub = state)
-abline(h = -3, col = 'red', lty = 2)
-
-refine_k_grid <- unique(grid_search_results$inner_grid_parameters$Var2)
-refine_llk_k <- minimal_llk_per_k
-plot(refine_k_grid,refine_llk_k, ylab = '-llk', xlab='K', type = 'l', main = 'Profile likelihood of K', sub = state)
-abline(h = -3, col = 'red', lty = 2)
-abline(h = 0, col = 'red', lty = 2)
 ```
 
 
