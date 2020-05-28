@@ -49,8 +49,8 @@ List InnerCalibrationLoopRcpp(
                double Del,
                int calibration_loops){
   List results(5);
-  NumericVector beta_hat(n);
-  NumericVector gamma_hat(n);
+  NumericMatrix beta_hat(n,1);
+  NumericMatrix gamma_hat(n,1);
   NumericMatrix T_final (n,2);
   NumericMatrix T1 (n,2);
   
