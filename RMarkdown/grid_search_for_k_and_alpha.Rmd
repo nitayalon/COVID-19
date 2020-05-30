@@ -28,74 +28,22 @@ trajectories <- lapply(1:3, function(i){predictCovidTrajectory(grid_search_resul
 ```
 
 ```{r plot Germany data}
-dates <- seq(as.Date('01/'))
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/07/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/07/2020',format = '%d/%m/%y')
+plotTrajectories(grid_search_results$environment_data,trajectories,dates,last_date,'Germany',ylim = c(0,2.1))
 ```
 
-
-```{r US grid search}
-usa_data_fine_alpha_grid <- mainFunction('US',60)
-str(usa_data_fine_alpha_grid$final_results)
-
-likelihood_mtrix <- matrix(usa_data_fine_alpha_grid$OBJ, nrow = length(unique(usa_data_fine_alpha_grid$grid_parameters$Var2)),
-                           ncol =length(unique(usa_data_fine_alpha_grid$grid_parameters$Var1)), byrow = T)
-
-minimal_llk_per_k <- apply(likelihood_mtrix, 1, min)
-minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
-minimal_llk_per_alpha <- apply(likelihood_mtrix, 2, min)
-minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
-
-plot(unique(usa_data_fine_alpha_grid$grid_parameters$Var2),minimal_llk_per_k, ylab = '-llk', xlab='K', type = 'l')
-plot(unique(usa_data_fine_alpha_grid$grid_parameters$Var1),minimal_llk_per_alpha, ylab = '-llk', xlab='Alpha', type = 'l',
-     main = 'Profile likelihood of Alpha', sub = 'USA')
-abline(h = -3, col = 'red', lty = 2)
+```{r Germany grid search}
+state <- 'Italy'
+italy_grid_search_results <- mainFunction(state,60, population_list[[state]])
+italy_K_grid <- c(italy_grid_search_results$K_CI[1], italy_grid_search_results$mle_K, italy_grid_search_results$K_CI[2])
+italy_alpha_grid <- c(italy_grid_search_results$alpha_CI[1], italy_grid_search_results$mle_alpha, italy_grid_search_results$alpha_CI[2])
+italy_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(italy_grid_search_results$environment_data, italy_K_grid[i], italy_alpha_grid[i])})
 ```
 
-```{r refining the k plot}
-refine_k_grid <- unique(usa_data_fine_alpha_grid$grid_parameters$Var2)[minimal_llk_per_k > -10]
-refine_llk_k <- minimal_llk_per_k[minimal_llk_per_k > -10]
-plot(refine_k_grid,refine_llk_k, ylab = '-llk', xlab='K', type = 'l', main = 'Profile likelihood of K', sub = 'USA')
-abline(h = -3, col = 'red', lty = 2)
+```{r plot Germany data}
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/07/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/07/2020',format = '%d/%m/%y')
+plotTrajectories(italy_grid_search_results$environment_data,italy_trajectories,dates,last_date,'Italy',ylim = c(0,3))
 ```
 
-```{r alpha K regression}
-alpha_min <- unique(usa_data_fine_alpha_grid$grid_parameters$Var1)[apply(likelihood_mtrix, 1, which.min)]
-K_min <- unique(usa_data_fine_alpha_grid$grid_parameters$Var2)[apply(likelihood_mtrix, 2, which.min)]
-
-alpha_vs_k_linear_model <- lm(alpha_min ~ unique(usa_data_fine_alpha_grid$grid_parameters$Var2))
-K_vs_alpha_linear_model <- lm(K_min ~ unique(usa_data_fine_alpha_grid$grid_parameters$Var1))
-
-sqrt(alpha_vs_k_linear_model$coefficients[2] * K_vs_alpha_linear_model$coefficients[2])
-```
-
-```{r US grid search}
-italy_data_fine_alpha_grid <- mainFunction('Italy',60)
-
-likelihood_matrix_italy <- matrix(italy_data_fine_alpha_grid$OBJ, nrow = length(unique(italy_data_fine_alpha_grid$grid_parameters$Var2)),
-                           ncol =length(unique(italy_data_fine_alpha_grid$grid_parameters$Var1)), byrow = T)
-
-minimal_llk_per_k <- apply(likelihood_matrix_italy, 1, min)
-minimal_llk_per_k <- -minimal_llk_per_k - max(-minimal_llk_per_k)
-minimal_llk_per_alpha <- apply(likelihood_matrix_italy, 2, min)
-minimal_llk_per_alpha <- -minimal_llk_per_alpha - max(-minimal_llk_per_alpha)
-
-plot(unique(italy_data_fine_alpha_grid$grid_parameters$Var1),minimal_llk_per_alpha, ylab = '-llk', xlab='Alpha', type = 'l',
-     main = 'Profile likelihood of Alpha', sub = 'Italy')
-abline(h = -3, col = 'red', lty = 2)
-```
-
-```{r refining the k plot}
-refine_k_grid <- unique(italy_data_fine_alpha_grid$grid_parameters$Var2)[minimal_llk_per_k > -10]
-refine_llk_k <- minimal_llk_per_k[minimal_llk_per_k > -10]
-plot(refine_k_grid,refine_llk_k, ylab = '-llk', xlab='K', type = 'l', main = 'Profile likelihood of K', sub = 'Italy')
-abline(h = -3, col = 'red', lty = 2)
-```
-
-```{r alpha K regression}
-alpha_min <- unique(italy_data_fine_alpha_grid$grid_parameters$Var1)[apply(likelihood_mtrix, 1, which.min)]
-K_min <- unique(italy_data_fine_alpha_grid$grid_parameters$Var2)[apply(likelihood_mtrix, 2, which.min)]
-
-alpha_vs_k_linear_model <- lm(alpha_min ~ unique(italy_data_fine_alpha_grid$grid_parameters$Var2))
-K_vs_alpha_linear_model <- lm(K_min ~ unique(italy_data_fine_alpha_grid$grid_parameters$Var1))
-
-sqrt(alpha_vs_k_linear_model$coefficients[2] * K_vs_alpha_linear_model$coefficients[2])
-```

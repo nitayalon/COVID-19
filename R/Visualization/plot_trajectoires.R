@@ -1,31 +1,36 @@
 plotTrajectories <- function(nation_data, 
-                             dates, nation_name, last_date, ylim = c(0,25),
+                             trajectories,
+                             dates, 
+                             last_date, 
+                             nation_name, 
+                             ylim = c(0,25),
                              current_data = NULL, current_date = NULL, plot_maximal_infection = T){
   
-  starting_day <- as.Date(dates[60], format = '%m/%d/%y')
+  starting_day <- dates[60]
   days <- seq(starting_day, last_date, 1)
+
+  x_mle_upper <- trajectories[[3]]$x
+  y_mle_upper <- trajectories[[3]]$y
+  vw_mle_upper <- trajectories[[3]]$vw
   
-  x_mle_upper <- nation_data$K_grid_results[[3]]$x
-  y_mle_upper <- nation_data$K_grid_results[[3]]$y
-  vw_mle_upper <- nation_data$K_grid_results[[3]]$vw
-  
-  x_mle_mid <- nation_data$K_grid_results[[2]]$x
-  y_mle_mid <- nation_data$K_grid_results[[2]]$y
-  vw_mle_mid <- nation_data$K_grid_results[[2]]$vw
+  x_mle_mid <- trajectories[[2]]$x
+  y_mle_mid <- trajectories[[2]]$y
+  vw_mle_mid <- trajectories[[2]]$vw
   
   
-  x_mle_lower <- nation_data$K_grid_results[[1]]$x
-  y_mle_lower <- nation_data$K_grid_results[[1]]$y
-  vw_mle_lower <- nation_data$K_grid_results[[1]]$vw
+  x_mle_lower <- trajectories[[1]]$x
+  y_mle_lower <- trajectories[[1]]$y
+  vw_mle_lower <- trajectories[[1]]$vw
   
   max_infection_upper <- max(y_mle_upper[(1:length(x_mle_upper)) %% 100 == 0][1:length(days)] / 1e5)
   max_infection_mid <- max(y_mle_mid[(1:length(x_mle_mid)) %% 100 == 0][1:length(days)] / 1e5)
   max_infection_lower <- max(y_mle_lower[(1:length(x_mle_lower)) %% 100 == 0][1:length(days)] / 1e5)
+  max_infection_actual <- max(nation_data$Y / 1e5)
   
   max_infection_upper_index <- which.max(y_mle_upper[(1:length(x_mle_upper)) %% 100 == 0][1:length(days)] / 1e5)
   max_infection_mid_index <- which.max(y_mle_mid[(1:length(x_mle_mid)) %% 100 == 0][1:length(days)] / 1e5)
   max_infection_lower_index <- which.max(y_mle_lower[(1:length(x_mle_lower)) %% 100 == 0][1:length(days)] / 1e5)
-  
+  max_infection_actual_index <- which.max(nation_data$Y / 1e5)
   
   plot(days, 
        x_mle_upper[(1:length(x_mle_upper)) %% 100 == 0][1:length(days)] / 1e5, col = 'orange' , type = 'b', pch=7, panel.first = grid(),
@@ -71,23 +76,34 @@ plotTrajectories <- function(nation_data,
            x1 = days[max_infection_upper_index],
            y1 = max_infection_upper,
            col = 'orange',
-           lwd = 2)
+           lty = 1.5,
+           lwd = 3)
+  segments(x0 = 0,
+           y0 = max_infection_actual,
+           x1 = days[max_infection_actual_index],
+           y1 = max_infection_actual,
+           col = 'blue',
+           lty = 1.5,
+           lwd = 3)
   segments(x0 = 0,
            y0 = max_infection_mid, 
            x1 = days[max_infection_mid_index],
            y1 = max_infection_mid,
            col = 'red',
-           lwd = 2)
+           lty = 1.5,
+           lwd = 3)
   segments(x0 = 0,
            y0 = max_infection_lower, 
            x1 = days[max_infection_lower_index],
            y1 = max_infection_lower,
            col = 'green',
-           lwd = 2)
+           lty = 1.5,
+           lwd = 3)
   segments(x0 = min(days) + length(nation_data$X),
            y0 = 0, 
            x1 = min(days) + length(nation_data$X),
            y1 = ylim[2],
            col = 'black',
-           lwd = 2)
+           lty = 1.5,
+           lwd = 3)
 }
