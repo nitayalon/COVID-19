@@ -34,7 +34,7 @@ population_list <- list(
   Netherlds =   17131112 ,
   Ecuador   =    17614626 ,
   Sweden    =    10092886 ,
-  Israel    =        9197590 ,
+  Israel    =         8645060 ,
   Austria   =      9001207 ,
   Argentina =    45153114 
 ) 
@@ -47,3 +47,6 @@ for(state_name in states_list){
   save(x = grid_search_results, file = sprintf('R/Ad_hoc_computations/grid_search_results/%s.RData',state_name))
   cat(sprintf('Ending time: %s',Sys.time()), '\n')
 }
+
+
+plotTrajectories(israel_grid_search_results$environment_data,israel_trajectories,dates,last_date,state,ylim = c(0,1.7),scale_factor = 1e4)

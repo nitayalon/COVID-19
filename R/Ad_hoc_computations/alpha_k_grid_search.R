@@ -14,8 +14,8 @@ gridSearchMainFunction <- function(national_data,
   X_middle = environment_data$X_middle
   Y_middle = environment_data$Y_middle
   n = environment_data$n
-  hhh_upper_limit = 200
-  hhh_lower_limit = 1
+  hhh_upper_limit = 10
+  hhh_lower_limit = 0.1
   NNN = floor(max(X) / 100) #What is the grid of K
   hhh <- seq(hhh_lower_limit, hhh_upper_limit, length.out = 50)
   
