@@ -11,39 +11,177 @@ Italy - validate that 52 and 60 makes no difference
 Germany - check after 70
 Chile - Validate the diff between 60 and 70
 
-```{r load environment libraries}
+```{r load environment libraries, warning=FALSE}
 library(dplyr)
 library(tidyverse)
 library(plotly)
 library(ggplot2)
+library(Rcpp)
+library(pbapply)
+source('/home/nitay/COVID-19/R/main.R')
+source('/home/nitay/COVID-19/R/Ad_hoc_computations/alpha_k_grid_search.R')
+source('/home/nitay/COVID-19/R/grid_search_method_helper.R')
+source('/home/nitay/COVID-19/R/calibration_loop.R')
+source('/home/nitay/COVID-19/R/inner_calibration_loop.R')
+source('/home/nitay/COVID-19/R/data_loader.R')
+source('/home/nitay/COVID-19/R/predict_covid_trajectory.R')
+source('/home/nitay/COVID-19/R/Visualization/plot_trajectoires.R')
+Rcpp::sourceCpp('/home/nitay/COVID-19/src/inner_loop.cpp')
+global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
+global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
+population_list <- list(
+  US =     330806424 ,   
+  Brazil =  212405664 ,
+  Russia    = 145928315 ,
+  Spain     =   46752999 ,
+  UK        =    67850075 ,
+  Italy     =     60470472 ,
+  France    =  65259187 ,
+  Germany   =   83757235 ,
+  Turkey    =  84244944 ,
+  India     =   1378604014 ,
+  Iran      =     83880266 ,
+  Peru      =    32923430 ,
+  Canada    =  37708187 ,
+  China     =    1439323776 ,
+  Saudi     =         34756224 ,
+  Chile     =     19099374 ,
+  Mexico    =   128792446 ,
+  Belgium   =  11584564 ,
+  Netherlds =   17131112 ,
+  Ecuador   =    17614626 ,
+  Sweden    =    10092886 ,
+  Israel    =        9197590 ,
+  Austria   =      9001207 ,
+  Argentina =    45153114 
+) 
+
 ```
 
-
-```{r Germany grid search}
-state <- 'Germany'
-grid_search_results <- mainFunction(state,60, population_list[[state]])
-K_grid <- c(grid_search_results$K_CI[1], grid_search_results$mle_K, grid_search_results$K_CI[2])
-alpha_grid <- c(grid_search_results$alpha_CI[1], grid_search_results$mle_alpha, grid_search_results$alpha_CI[2])
-trajectories <- lapply(1:3, function(i){predictCovidTrajectory(grid_search_results$environment_data, K_grid[i], alpha_grid[i])})
+Arrange Sweden data
+```{r Sweden grid search}
+swedish_data <- read.table('/home/nitay/COVID-19/csse_covid_19_data/nation_wide_data/swedenrecover')
+state <- 'Sweden'
+sweden_grid_search_results <- mainFunction(state,60, population_list[[state]],sweden_data = T,cut_off_day = 107)
+save(x = sweden_grid_search_results, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
 ```
 
-```{r plot Germany data}
-dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/07/2020',format = '%d/%m/%y'),'day')
-last_date <- as.Date('01/07/2020',format = '%d/%m/%y')
-plotTrajectories(grid_search_results$environment_data,trajectories,dates,last_date,'Germany',ylim = c(0,2.1))
+```{r compute sweden trajectories}
+sweden_K_grid <- c(sweden_grid_search_results$inner_grid_search_results$K_CI[1], 
+               sweden_grid_search_results$inner_grid_search_results$profile_likelihood_K$alpha[which.max(sweden_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+               sweden_grid_search_results$inner_grid_search_results$K_CI[2])
+sweden_alpha_grid <- c(NA, sweden_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(sweden_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+sweden_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(sweden_grid_search_results$environment_data, sweden_K_grid[i],sweden_alpha_grid[i])})
+sweden_alpha_grid <- c(sweden_trajectories[[1]]$alpha, sweden_alpha_grid[2], sweden_trajectories[[3]]$alpha)
 ```
 
-```{r Germany grid search}
+```{r plot Sweden data}
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/08/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/08/2020',format = '%d/%m/%y')
+plotTrajectories(sweden_grid_search_results$environment_data,sweden_trajectories,dates,last_date,state,ylim = c(0,0.5))
+```
+
+```{r report sweden data}
+reportCovidGreeks(sweden_trajectories,sweden_K_grid, sweden_alpha_grid)
+```
+
+```{r Italy grid search}
 state <- 'Italy'
 italy_grid_search_results <- mainFunction(state,60, population_list[[state]])
-italy_K_grid <- c(italy_grid_search_results$K_CI[1], italy_grid_search_results$mle_K, italy_grid_search_results$K_CI[2])
-italy_alpha_grid <- c(italy_grid_search_results$alpha_CI[1], italy_grid_search_results$mle_alpha, italy_grid_search_results$alpha_CI[2])
-italy_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(italy_grid_search_results$environment_data, italy_K_grid[i], italy_alpha_grid[i])})
+save(x = italy_grid_search_results, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
+italy_K_grid <- c(italy_grid_search_results$inner_grid_search_results$K_CI[1], italy_grid_search_results$inner_grid_search_results$profile_likelihood_K$alpha[which.max(italy_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], italy_grid_search_results$inner_grid_search_results$K_CI[2])
+italy_alpha_grid <- c(NA, italy_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(italy_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+italy_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(italy_grid_search_results$environment_data, italy_K_grid[i],italy_alpha_grid[i])})
+italy_alpha_grid <- c(italy_trajectories[[1]]$alpha, italy_alpha_grid[2], italy_trajectories[[3]]$alpha)
 ```
 
-```{r plot Germany data}
-dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/07/2020',format = '%d/%m/%y'),'day')
-last_date <- as.Date('01/07/2020',format = '%d/%m/%y')
-plotTrajectories(italy_grid_search_results$environment_data,italy_trajectories,dates,last_date,'Italy',ylim = c(0,3))
+```{r plot Italy data}
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/08/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/08/2020',format = '%d/%m/%y')
+state <- 'Italy'
+plotTrajectories(italy_grid_search_results$environment_data,italy_trajectories,dates,last_date,state,ylim = c(0,3))
 ```
 
+
+```{r report grid seach results italy}
+reportCovidGreeks(italy_trajectories,italy_K_grid, italy_alpha_grid)
+```
+
+```{r us grid search}
+state <- 'US'
+us_grid_search_results <- mainFunction(state,60, population_list[[state]])
+save(x = us_grid_search_results, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
+us_K_grid <- c(us_grid_search_results$inner_grid_search_results$K_CI[1], 
+               us_grid_search_results$inner_grid_search_results$profile_likelihood_K$alpha[which.max(us_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+               us_grid_search_results$inner_grid_search_results$K_CI[2])
+us_alpha_grid <- c(NA, us_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(us_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+us_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(us_grid_search_results$environment_data, us_K_grid[i],us_alpha_grid[i])})
+us_alpha_grid <- c(us_trajectories[[1]]$alpha, us_alpha_grid[2], us_trajectories[[3]]$alpha)
+```
+
+
+```{r plot us data}
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/11/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/11/2020',format = '%d/%m/%y')
+plotTrajectories(us_grid_search_results$environment_data,us_trajectories,dates,last_date,state,ylim = c(0,2.5),scale_factor = 1e6)
+```
+
+
+```{r report grid seach results usa}
+reportCovidGreeks(us_trajectories, us_K_grid, us_alpha_grid)
+```
+
+```{r germany grid search}
+state <- 'Germany'
+germanyl_grid_search_results <- mainFunction(state,60, population_list[[state]])
+save(x = germany_grid_search_results, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
+germany_K_grid <- c(germany_grid_search_results$inner_grid_search_results$K_CI[1], 
+               germany_grid_search_results$inner_grid_search_results$profile_likelihood_K$alpha[which.max(germany_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+               germany_grid_search_results$inner_grid_search_results$K_CI[2])
+germany_alpha_grid <- c(NA, germany_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(germany_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+germany_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(germany_grid_search_results$environment_data, germany_K_grid[i],germany_alpha_grid[i])})
+germany_alpha_grid <- c(germany_trajectories[[1]]$alpha, germany_alpha_grid[2], germany_trajectories[[3]]$alpha)
+```
+
+```{r germany profile likelihood}
+plot(germanyl_grid_search_results$inner_grid_search_results$profile_likelihood_alpha)
+plot(germanyl_grid_search_results$inner_grid_search_results$profile_likelihood_K)
+abline(h = -2.5, col = 'red')
+```
+
+
+```{r plot germany data}
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/11/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/11/2020',format = '%d/%m/%y')
+plotTrajectories(germany_grid_search_results$environment_data,germany_trajectories,dates,last_date,state,ylim = c(0,2.5),scale_factor = 1e5)
+```
+
+
+```{r report grid seach results germany}
+reportCovidGreeks(germany_trajectories, germany_K_grid, germany_alpha_grid)
+```
+
+
+```{r israel grid search}
+state <- 'Israel'
+israel_grid_search_results <- mainFunction(state,60, population_list[[state]])
+save(x = israel_grid_search_results, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
+israel_K_grid <- c(israel_grid_search_results$inner_grid_search_results$K_CI[1], 
+               israel_grid_search_results$inner_grid_search_results$profile_likelihood_K$alpha[which.max(israel_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+               israel_grid_search_results$inner_grid_search_results$K_CI[2])
+israel_alpha_grid <- c(NA, israel_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(israel_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+israel_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(israel_grid_search_results$environment_data, israel_K_grid[i],israel_alpha_grid[i])})
+israel_alpha_grid <- c(israel_trajectories[[1]]$alpha, israel_alpha_grid[2], israel_trajectories[[3]]$alpha)
+```
+
+
+```{r plot israel data}
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/11/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/11/2020',format = '%d/%m/%y')
+plotTrajectories(israel_grid_search_results$environment_data,israel_trajectories,dates,last_date,state,ylim = c(0,0.2),scale_factor = 1e5)
+```
+
+```{r report grid seach results israel}
+reportCovidGreeks(israel_trajectories, israel_K_grid, israel_alpha_grid)
+```

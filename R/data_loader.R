@@ -6,7 +6,7 @@ DataLoader <- function(covid_data, starting_day,cut_off_day= NULL)
     cutoff <- nrow(covid_data)
   }
   else{
-    cutoff <- min(nrow(covid_data), nrow(covid_data) - cut_off_day)
+    cutoff <- min(nrow(covid_data), cut_off_day)
   }
   X = covid_data[ind:cutoff,1]
   V = covid_data[ind:cutoff,2]

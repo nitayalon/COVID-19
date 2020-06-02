@@ -23,8 +23,10 @@ InnerCalibrationLoop <- function(K,n,X,VW,Y,
       T1[i,1] = sum(x<=X[i])
       T1[i,2] = sum(vw<=VW[i])
     }
-    T1[,1]=T1[,1]+(X-x[T1[,1]])/(x[T1[,1]+1]-x[T1[,1]])
-    T1[,2]=T1[,2]+(VW-vw[T1[,2]])/(vw[T1[,2]+1]-vw[T1[,2]])
+    x_rtt_correction <- pmax((X-x[T1[,1]])/(x[T1[,1]+1]-x[T1[,1]]), 0, na.rm = T)
+    vw_rtt_correction <- pmax((VW-vw[T1[,2]])/(vw[T1[,2]+1]-vw[T1[,2]]), 0, na.rm = T)
+    T1[,1] = T1[,1] + x_rtt_correction
+    T1[,2] = T1[,2] + vw_rtt_correction 
     T1=T1 * del
     beta = beta * T1[n,1]/n
     gamma = gamma * T1[n,2]/n

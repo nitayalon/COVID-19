@@ -1,4 +1,4 @@
-predictCovidTrajectory <- function(environment_data,K, alpha){
+predictCovidTrajectory <- function(environment_data,K, alpha = NULL){
   partition_parameter = 100
   del = 1/partition_parameter 
   X = environment_data$X
@@ -7,6 +7,11 @@ predictCovidTrajectory <- function(environment_data,K, alpha){
   X_middle = environment_data$X_middle
   Y_middle = environment_data$Y_middle
   n = environment_data$n
+  if(is.na(alpha)){
+    alpha_grid = seq(0.2,0.8,length.out = 40)
+    grid_search_results <- gridSearchMethodHelper(alpha_grid,K,X,VW,Y, del,Y_middle,X_middle,partition_parameter)
+    alpha <- alpha_grid[which.max(grid_search_results$alpha_profile)]
+  }
   
   inner_calibration_loop <- InnerCalibrationLoop(K, n, X,VW,Y,
                                                  alpha,Y_middle,X_middle,partition_parameter,del)
@@ -22,7 +27,8 @@ predictCovidTrajectory <- function(environment_data,K, alpha){
   x = round(res[1,],7)
   vw = round(res[2,],7)
   y = round(res[3,],7)
-  return(list(beta = beta,
+  return(list(alpha = alpha,
+              beta = beta,
               gamma = gamma,
               x = x,
               vw = vw,

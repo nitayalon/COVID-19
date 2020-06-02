@@ -33,6 +33,7 @@ GridSearchInnerLoop <- function(X,VW,Y,
   
   OBJ1=sum(log(AD)+log(BD)) #single figure - denom
   OBJ=OBJ1+(n/2)*log(det(COV)) # likelihood when we use two BM's
+  if(is.na(OBJ1) || is.na(OBJ)){browser()}
   LOGL=log(det(COV))
   VAR1=mean(diag(COV))
   OBJB=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
