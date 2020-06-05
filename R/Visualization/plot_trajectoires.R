@@ -5,12 +5,14 @@ plotTrajectories <- function(nation_data,
                              nation_name, 
                              ylim = c(0,25),
                              scale_factor = 1e5,
+                             starting_day = 60,
+                             last_fitting_date = as.Date('25/05/2020', format = '%d/%m/%y'),
                              current_data = NULL, 
                              current_date = NULL, 
                              plot_maximal_infection = T,
                              plot_maximal_empiric_infection = T){
   
-  starting_day <- dates[60]
+  starting_day <- dates[starting_day]
   days <- seq(starting_day, last_date, 1)
 
   x_mle_upper <- trajectories[[3]]$x
@@ -48,13 +50,14 @@ plotTrajectories <- function(nation_data,
   
   if(plot_maximal_infection){
     important_dates <- c(min(days),
-                         min(days) + length(nation_data$X), 
+                         last_fitting_date, 
                          days[max_infection_upper_index],
                          days[max_infection_mid_index], days[max_infection_lower_index],
                          max(days))
   }
   else{
-    important_dates <- c(min(days),min(days) + length(nation_data$X), 
+    important_dates <- c(min(days),
+                         last_fitting_date, 
                          max(days))
   }
   
@@ -106,9 +109,9 @@ plotTrajectories <- function(nation_data,
            col = 'green',
            lty = 1,
            lwd = 3)
-  segments(x0 = min(days) + length(nation_data$X),
+  segments(x0 = last_fitting_date,
            y0 = 0, 
-           x1 = min(days) + length(nation_data$X),
+           x1 = last_fitting_date,
            y1 = ylim[2],
            col = 'black',
            lty = 2,

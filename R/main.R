@@ -1,5 +1,5 @@
 mainFunction <- function(state_name, starting_day, population, cut_off_day = NULL, other_parameters = NULL,
-                         only_lower_bounds = F,sweden_data = F){
+                         only_lower_bounds = F,sweden_data = F,just_data = F){
   
   confirmed_cases <- global_confirmed_cases %>% 
     select(-`Province/State`, -Lat, -Long) %>% 
@@ -40,6 +40,6 @@ mainFunction <- function(state_name, starting_day, population, cut_off_day = NUL
     covid_data[,3] <- swedish_data$V1
   }
   print('Data ready')
-  nation_wide_rtt_results <- gridSearchMainFunction(covid_data, population, starting_day, cut_off_day,only_lower_bounds)
+  nation_wide_rtt_results <- gridSearchMainFunction(covid_data, population, starting_day, cut_off_day,only_lower_bounds,just_data = just_data)
   return(nation_wide_rtt_results)
 }

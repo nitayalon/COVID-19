@@ -16,7 +16,7 @@ gridSearchMethodHelper <- function(alpha_grid, k_grid, X,VW,Y, del,Y_middle,X_mi
                 k_profile = minimal_llk_per_k))
   }
   profile_likelihood_alpha = tibble(alpha = alpha_grid, llk = minimal_llk_per_alpha)
-  profile_likelihood_K  = tibble(alpha = k_grid, llk = minimal_llk_per_k)
+  profile_likelihood_K  = tibble(k = k_grid, llk = minimal_llk_per_k)
   K_CI = c(k_grid[min(which(minimal_llk_per_k > -2.5))],k_grid[max(which(minimal_llk_per_k > -2.5))])
   
   return(list(profile_likelihood_alpha = profile_likelihood_alpha,

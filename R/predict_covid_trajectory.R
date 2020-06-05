@@ -8,7 +8,7 @@ predictCovidTrajectory <- function(environment_data,K, alpha = NULL){
   Y_middle = environment_data$Y_middle
   n = environment_data$n
   if(is.na(alpha)){
-    alpha_grid = seq(0.2,0.8,length.out = 40)
+    alpha_grid = seq(0.05,0.6,length.out = 40)
     grid_search_results <- gridSearchMethodHelper(alpha_grid,K,X,VW,Y, del,Y_middle,X_middle,partition_parameter)
     alpha <- alpha_grid[which.max(grid_search_results$alpha_profile)]
   }

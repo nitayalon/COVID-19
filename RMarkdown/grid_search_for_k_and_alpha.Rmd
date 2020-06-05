@@ -79,6 +79,7 @@ sweden_alpha_grid <- c(sweden_trajectories[[1]]$alpha, sweden_alpha_grid[2], swe
 ```{r plot Sweden data}
 dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/08/2020',format = '%d/%m/%y'),'day')
 last_date <- as.Date('01/08/2020',format = '%d/%m/%y')
+state <- 'Sweden'
 plotTrajectories(sweden_grid_search_results$environment_data,sweden_trajectories,dates,last_date,state,ylim = c(0,0.5))
 ```
 
@@ -100,6 +101,8 @@ italy_alpha_grid <- c(italy_trajectories[[1]]$alpha, italy_alpha_grid[2], italy_
 dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/08/2020',format = '%d/%m/%y'),'day')
 last_date <- as.Date('01/08/2020',format = '%d/%m/%y')
 state <- 'Italy'
+update_italian_data <- mainFunction(state,60, population_list[[state]],just_data = T)
+italy_grid_search_results$environment_data <- update_italian_data
 plotTrajectories(italy_grid_search_results$environment_data,italy_trajectories,dates,last_date,state,ylim = c(0,3))
 ```
 
@@ -124,6 +127,9 @@ us_alpha_grid <- c(us_trajectories[[1]]$alpha, us_alpha_grid[2], us_trajectories
 ```{r plot us data}
 dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/11/2020',format = '%d/%m/%y'),'day')
 last_date <- as.Date('01/11/2020',format = '%d/%m/%y')
+state <- 'US'
+update_usa_data <- mainFunction(state,60, population_list[[state]],just_data = T)
+us_grid_search_results$environment_data <- update_usa_data
 plotTrajectories(us_grid_search_results$environment_data,us_trajectories,dates,last_date,state,ylim = c(0,2.5),scale_factor = 1e6)
 ```
 
@@ -154,7 +160,10 @@ abline(h = -2.5, col = 'red')
 ```{r plot germany data}
 dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/11/2020',format = '%d/%m/%y'),'day')
 last_date <- as.Date('01/11/2020',format = '%d/%m/%y')
-plotTrajectories(germany_grid_search_results$environment_data,germany_trajectories,dates,last_date,state,ylim = c(0,2.5),scale_factor = 1e5)
+state <- 'Germany'
+update_germany_data <- mainFunction(state,60, population_list[[state]],just_data = T)
+germany_grid_search_results$environment_data <- update_germany_data
+plotTrajectories(germany_grid_search_results$environment_data,germany_trajectories,dates,last_date,state,ylim = c(0,2.0),scale_factor = 1e5)
 ```
 
 
@@ -165,16 +174,15 @@ reportCovidGreeks(germany_trajectories, germany_K_grid, germany_alpha_grid)
 
 ```{r israel grid search}
 state <- 'Israel'
-israel_grid_search_results <- mainFunction(state,60, population_list[[state]])
+israel_grid_search_results <- mainFunction(state,75, population_list[[state]], cut_off_day = 124)
 save(x = israel_grid_search_results, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
-plot(israel_grid_search_results$inner_grid_search_results$profile_likelihood_K)
-plot(israel_grid_search_results$inner_grid_search_results$profile_likelihood_alpha)
 israel_K_grid <- c(israel_grid_search_results$inner_grid_search_results$K_CI[1], 
-               israel_grid_search_results$inner_grid_search_results$profile_likelihood_K$alpha[which.max(israel_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+               israel_grid_search_results$inner_grid_search_results$profile_likelihood_K$k[which.max(israel_grid_search_results$inner_grid_search_results$profile_likelihood_K$llk)], 
                israel_grid_search_results$inner_grid_search_results$K_CI[2])
 israel_alpha_grid <- c(NA, israel_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(israel_grid_search_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
 israel_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(israel_grid_search_results$environment_data, israel_K_grid[i],israel_alpha_grid[i])})
 israel_alpha_grid <- c(israel_trajectories[[1]]$alpha, israel_alpha_grid[2], israel_trajectories[[3]]$alpha)
+israel_grid_search_results$environment_data <- israel_grid_search_results_new$environment_data
 ```
 
 ```{r germany profile likelihood}
@@ -186,9 +194,40 @@ abline(h = -2.5, col = 'red')
 ```{r plot israel data}
 dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/09/2020',format = '%d/%m/%y'),'day')
 last_date <- as.Date('01/09/2020',format = '%d/%m/%y')
-plotTrajectories(israel_grid_search_results$environment_data,israel_trajectories,dates,last_date,state,ylim = c(0,1.7),scale_factor = 1e4)
+plotTrajectories(israel_grid_search_results$environment_data,israel_trajectories,dates,last_date,state,ylim = c(0,1.7),scale_factor = 1e4,starting_day = 75)
 ```
 
 ```{r report grid seach results israel}
 reportCovidGreeks(israel_trajectories, israel_K_grid, israel_alpha_grid)
 ```
+
+```{r update Israel prediction}
+israel_grid_search_results_new <- mainFunction(state,74, population_list[[state]])
+save(x = israel_grid_search_results_new, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s.RData',state))
+plot(israel_grid_search_results_new$inner_grid_search_results$profile_likelihood_K)
+plot(israel_grid_search_results_new$inner_grid_search_results$profile_likelihood_alpha)
+israel_K_grid_new <- c(israel_grid_search_results_new$inner_grid_search_results$K_CI[1], 
+               israel_grid_search_results_new$inner_grid_search_results$profile_likelihood_K$k[which.max(israel_grid_search_results_new$inner_grid_search_results$profile_likelihood_K$llk)], 
+               israel_grid_search_results_new$inner_grid_search_results$K_CI[2])
+israel_alpha_grid_new <- c(NA, israel_grid_search_results_new$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(israel_grid_search_results_new$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+israel_trajectories_new <- lapply(1:3, function(i){predictCovidTrajectory(israel_grid_search_results_new$environment_data, israel_K_grid_new[i],israel_alpha_grid_new[i])})
+israel_alpha_grid_new <- c(israel_trajectories_new[[1]]$alpha, israel_alpha_grid_new[2], israel_trajectories_new[[3]]$alpha)
+
+dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/09/2020',format = '%d/%m/%y'),'day')
+last_date <- as.Date('01/09/2020',format = '%d/%m/%y')
+plotTrajectories(israel_grid_search_results_new$environment_data,israel_trajectories_new,dates,last_date,state,ylim = c(0,2.0),scale_factor = 1e4,starting_day = 64,last_fitting_date = as.Date('02/06/2020', format = '%d/%m/%y'))
+reportCovidGreeks(israel_trajectories_new, israel_K_grid_new, israel_alpha_grid_new)
+```
+
+```{r}
+n <- length(israel_grid_search_results_new$environment_data$full_data[,1])
+ind <- 64
+x_i <- israel_grid_search_results_new$environment_data$full_data[ind:n,1]
+vw_i <- israel_grid_search_results_new$environment_data$full_data[ind:n,2] + 
+         israel_grid_search_results_new$environment_data$full_data[ind:n,3]
+
+plot(log(x_i), col = 'blue', ylim = c(4, 11))
+points(log(vw_i), col = 'green')
+points(log(x_i - vw_i), col = 'red')
+```
+
