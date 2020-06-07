@@ -41,7 +41,6 @@ population_list <- list(
 
 states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium'))
 states_raw_data = lapply(states_list, function(x){mainFunction(x,0,population_list[[x]],just_data = T)})
-states_raw_data[[1]]$full_data
 data_for_isaco = data.frame(states_raw_data[[1]]$full_data)
 for(i in 2:length(states_list))
 {
@@ -49,6 +48,12 @@ for(i in 2:length(states_list))
 }
 names_for_table <- rep(c('Total_cases','Total_death','Total_recovered'), 9)
 names(data_for_isaco) = names_for_table
+global_confirmed_recovered %>% 
+  select(-`Province/State`, -Lat, -Long, -`Country/Region`) %>% 
+  names()
+data_for_isaco$Date = global_confirmed_recovered %>% 
+  select(-`Province/State`, -Lat, -Long, -`Country/Region`) %>% 
+  names()
 write_csv(data_for_isaco, 'Data/data_for_linear_models.csv',col_names = T)
 for(state_name in states_list){
   cat(sprintf('Current state: %s',state_name), '\n')
