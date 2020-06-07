@@ -68,6 +68,11 @@ List InnerCalibrationLoopRcpp(
       T1(i,0) = T1(i,0) + (X[i]-x[T1(i,0)])/(x[T1(i,0)+1]-x[T1(i,0)]);
       T1(i,1) = T1(i,1) + (VW[i]-vw[T1(i,1)])/(vw[T1(i,1)+1]-vw[T1(i,1)]);
     }
+    NumericVector blah = (X-x[T1(_,0)])/(x[T1(_,0)+1]-x[T1(_,0)]);
+    NumericVector x_rtt_correction = pmax(blah, 0);
+    NumericVector vw_rtt_correction = pmax((VW-vw[T1(_,1)])/(vw[T1(_,1)+1]-vw[T1(_,1)]), 0);
+    T1(_,0) = T1(_,0) + x_rtt_correction;
+    T1(_,1) = T1(_,1) + vw_rtt_correction; 
     T1=T1 * Del;
     Beta = Beta * T1((n-1), 0) / n;
     Gamma = Gamma * T1((n-1), 1) / n;

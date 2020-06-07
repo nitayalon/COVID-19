@@ -39,11 +39,21 @@ population_list <- list(
   Argentina =    45153114 
 ) 
 
-states_list <- c('Israel')
+states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium'))
+states_raw_data = lapply(states_list, function(x){mainFunction(x,0,population_list[[x]],just_data = T)})
+states_raw_data[[1]]$full_data
+data_for_isaco = data.frame(states_raw_data[[1]]$full_data)
+for(i in 2:length(states_list))
+{
+  data_for_isaco = cbind(data_for_isaco,states_raw_data[[i]]$full_data)
+}
+names_for_table <- rep(c('Total_cases','Total_death','Total_recovered'), 9)
+names(data_for_isaco) = names_for_table
+write_csv(data_for_isaco, 'Data/data_for_linear_models.csv',col_names = T)
 for(state_name in states_list){
   cat(sprintf('Current state: %s',state_name), '\n')
   cat(sprintf('Sarting time: %s',Sys.time()), '\n')
-  grid_search_results <- mainFunction(state_name, 60, population_list[[state_name]])
+  grid_search_results <- mainFunction(state_name, 60, population_list[[state_name]],just_data = T)
   save(x = grid_search_results, file = sprintf('R/Ad_hoc_computations/grid_search_results/%s.RData',state_name))
   cat(sprintf('Ending time: %s',Sys.time()), '\n')
 }
