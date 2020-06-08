@@ -12,6 +12,7 @@ Rcpp::sourceCpp('src/inner_loop.cpp')
 global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
+transformed_data <- read_csv("/home/nitay/COVID-19/Data/data_from_linear_models.csv",col_names = F)
 population_list <- list(
   US =     330806424 ,   
   Brazil =  212405664 ,
