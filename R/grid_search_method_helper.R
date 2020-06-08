@@ -4,7 +4,7 @@ gridSearchMethodHelper <- function(alpha_grid, k_grid, X,VW,Y, del,Y_middle,X_mi
   COV <- lapply(grid_search_results, function(x){x$COV})
   OBJ <- sapply(grid_search_results, function(x){x$OBJ})
   OBJB <- sapply(grid_search_results, function(x){x$OBJB})
-  likelihood_matrix <- matrix(OBJ, nrow = length(unique(grid_parameters$Var2)),
+  likelihood_matrix <- matrix(OBJB, nrow = length(unique(grid_parameters$Var2)),
                               ncol = length(unique(grid_parameters$Var1)), byrow = T)
   
   minimal_llk_per_k <- apply(likelihood_matrix, 1, function(x){min(x,na.rm = T)})

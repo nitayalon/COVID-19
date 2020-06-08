@@ -1,8 +1,8 @@
 InnerCalibrationLoop <- function(K,n,X,VW,Y,
                                  alpha,Y_middle,X_middle, partition_parameter, del, calibration_loops = 15)
 {
-  beta <- (X[n]-X[1]) / sum(pmax(1,Y_middle ^ alpha - Y_middle[1] ^ alpha)*(1 - (X_middle-X_middle[1]) / K))
-  gamma <- (VW[n]-VW[1]) / sum(pmax(1,Y_middle-Y_middle[1]))
+  beta <- (X[n] - X[1]) / sum(pmax(1,Y_middle ^ alpha)*(1 - (X_middle) / K))
+  gamma <- (VW[n] - VW[1]) / sum(pmax(1,Y_middle))
   beta_hat = gamma_hat = c()
   T1 = T_final = matrix(0, nrow = n, ncol = 2)
   # inner_calibration_loop <- InnerCalibrationLoopRcpp(beta, gamma, K, n, partition_parameter, X, VW ,Y, alpha,
@@ -25,8 +25,8 @@ InnerCalibrationLoop <- function(K,n,X,VW,Y,
     }
     x_rtt_correction <- pmax((X-x[T1[,1]])/(x[T1[,1]+1]-x[T1[,1]]), 0, na.rm = T)
     vw_rtt_correction <- pmax((VW-vw[T1[,2]])/(vw[T1[,2]+1]-vw[T1[,2]]), 0, na.rm = T)
-    T1[,1] = T1[,1] + x_rtt_correction
-    T1[,2] = T1[,2] + vw_rtt_correction 
+    T1[,1] = T1[,1] + c(x_rtt_correction[1:(n-1)],0) 
+    T1[,2] = T1[,2] + c(vw_rtt_correction[1:(n-1)],0) 
     T1=T1 * del
     beta = beta * T1[n,1]/n
     gamma = gamma * T1[n,2]/n
