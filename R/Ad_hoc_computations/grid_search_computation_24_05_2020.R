@@ -9,6 +9,9 @@ source('R/calibration_loop.R')
 source('R/inner_calibration_loop.R')
 source('R/data_loader.R')
 source('R/load_transformed_data.R')
+source('R/predict_covid_trajectory.R')
+source('R/report_grid_search_greeks.R')
+source('R/Visualization/plot_trajectoires.R')
 Rcpp::sourceCpp('src/inner_loop.cpp')
 global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
@@ -41,29 +44,25 @@ population_list <- list(
   Argentina =    45153114 
 ) 
 
-states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium'))
-states_raw_data = lapply(states_list, function(x){mainFunction(x,0,population_list[[x]],just_data = T)})
-data_for_isaco = data.frame(states_raw_data[[1]]$full_data)
-for(i in 2:length(states_list))
-{
-  data_for_isaco = cbind(data_for_isaco,states_raw_data[[i]]$full_data)
-}
-names_for_table <- rep(c('Total_cases','Total_death','Total_recovered'), 9)
-names(data_for_isaco) = names_for_table
-global_confirmed_recovered %>% 
-  select(-`Province/State`, -Lat, -Long, -`Country/Region`) %>% 
-  names()
-data_for_isaco$Date = global_confirmed_recovered %>% 
-  select(-`Province/State`, -Lat, -Long, -`Country/Region`) %>% 
-  names()
-write_csv(data_for_isaco, 'Data/data_for_linear_models.csv',col_names = T)
-for(state_name in states_list){
-  cat(sprintf('Current state: %s',state_name), '\n')
-  cat(sprintf('Sarting time: %s',Sys.time()), '\n')
-  grid_search_results <- mainFunction(state_name, 60, population_list[[state_name]],just_data = T)
-  save(x = grid_search_results, file = sprintf('R/Ad_hoc_computations/grid_search_results/%s.RData',state_name))
-  cat(sprintf('Ending time: %s',Sys.time()), '\n')
-}
+state <- 'Belgium'
+date = '07_06_2020'
+belgium_grid_search_results_07_06_2020 <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.2,0.6,length.out = 40))
+save(x = belgium_grid_search_results_07_06_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 
-
-plotTrajectories(israel_grid_search_results$environment_data,israel_trajectories,dates,last_date,state,ylim = c(0,1.7),scale_factor = 1e4)
+# brazil_K_grid <- c(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[1], 
+#                     brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$k[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+#                     brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[2])
+# brazil_alpha_grid <- c(NA, brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+# brazil_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(brazil_grid_search_results$nation_wide_rtt_results$environment_data, brazil_K_grid[i],brazil_alpha_grid[i],alpha_grid = seq(0.5,0.9,length.out = 40))})
+# brazil_alpha_grid <- c(brazil_trajectories[[1]]$alpha, brazil_alpha_grid[2], brazil_trajectories[[3]]$alpha)
+# 
+# plot(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K)
+# abline(h = -2.5, col = 'red')
+# plot(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha)
+# abline(h = -2.5, col = 'red')
+# dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/12/2020',format = '%d/%m/%y'),'day')
+# last_date <- as.Date('01/12/2020',format = '%d/%m/%y')
+# plotTrajectories(brazil_grid_search_results$nation_wide_rtt_results$environment_data,
+#                  brazil_grid_search_results$covid_data_sets$transformed_covid_data[start_day:nrow(brazil_grid_search_results$covid_data_sets$transformed_covid_data),],
+#                  brazil_trajectories,dates,last_date,'brazil',ylim = c(0,30),starting_day = start_day,scale_factor = 1e6)
+# reportCovidGreeks(brazil_trajectories, brazil_K_grid, brazil_alpha_grid)

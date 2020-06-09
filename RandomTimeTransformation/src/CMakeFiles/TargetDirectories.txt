@@ -1,0 +1,3 @@
+/home/nitay/COVID-19/RandomTimeTransformation/src/CMakeFiles/rebuild_cache.dir
+/home/nitay/COVID-19/RandomTimeTransformation/src/CMakeFiles/RandomTimeTransformaion.dir
+/home/nitay/COVID-19/RandomTimeTransformation/src/CMakeFiles/edit_cache.dir

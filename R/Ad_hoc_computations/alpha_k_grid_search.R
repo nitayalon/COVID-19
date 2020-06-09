@@ -1,6 +1,7 @@
 gridSearchMainFunction <- function(national_data, 
                                    population, 
-                                   starting_day, 
+                                   starting_day,
+                                   alpha_grid = seq(0.4,0.8,length.out = 40),
                                    cut_off_day = NULL, 
                                    prediction_period = NULL,
                          environment_parameter_list = NULL,
@@ -18,13 +19,12 @@ gridSearchMainFunction <- function(national_data,
   X_middle = environment_data$X_middle
   Y_middle = environment_data$Y_middle
   n = environment_data$n
-  hhh_upper_limit = 20
-  hhh_lower_limit = 0.1
+  hhh_upper_limit = 400
+  hhh_lower_limit = 1
   NNN = floor(max(X) / 100) #What is the grid of K
   hhh <- seq(hhh_lower_limit, hhh_upper_limit, length.out = 50)
   
   # Outer grid
-  alpha_grid = seq(0.05,0.6,length.out = 40)
   k_grid <- c(max(X) + hhh * NNN, population)
   outer_grid_search_results <- gridSearchMethodHelper(alpha_grid,k_grid,X,VW,Y, del,Y_middle,X_middle,partition_parameter)
   # Inner grid

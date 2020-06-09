@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nitay/COVID-19/RandomTimeTransformation/src/RandomTimeTransformaion.cpp
+iostream
+-
+RandomTimeTransformationConfig.h
+-
+

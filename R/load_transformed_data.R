@@ -39,6 +39,12 @@ uploadTransformData <- function(state_name){
   index = which(states_list == state_name)
   transformed_covid_data <- transformed_data[,(3 * index + -2) : (3 * index)]
   names(transformed_covid_data) <- c('X','Y','VW')
-  return(list(empirical_covid_data = empirical_covid_data,
+  
+  colnames(empirical_covid_data) = c('X','V','W')
+  empirical_data = empirical_covid_data %>% 
+    as.tibble() %>% 
+    mutate(Y = X - (V+W), VW = V+W) %>% 
+    select(X,Y,VW)
+  return(list(empirical_covid_data = empirical_data,
               transformed_covid_data = transformed_covid_data))
 }
