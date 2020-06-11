@@ -18,11 +18,10 @@ InnerCalibrationLoop <- function(K,n,X,VW,Y,
     y = round(res[3,],7)
     # random time transformation
     # The events where the pde solution equals to the emphirical values
-    
-    for(i in 1:n)
+    T1[1,1] = sum(round(x,5)<=round(X[1],5))
+    T1[1,2] = sum(round(vw,5)<=round(VW[1],5))
+    for(i in 2:n)
     {
-      # T1[i,1] = sum(round(x,5)<=round(X[i],5))
-      # T1[i,2] = sum(round(vw,5)<=round(VW[i],5))
       T1[i,1] = sum(x<=X[i])
       T1[i,2] = sum(vw<=VW[i])
     }
@@ -52,6 +51,7 @@ InnerCalibrationLoop <- function(K,n,X,VW,Y,
   
   return(list(
               TT = TT,
+              T_final = T_final,
               COV = COV,
               OBJ = OBJ,
               OBJB = OBJB,

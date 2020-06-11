@@ -1,0 +1,273 @@
+%\documentclass[12p]{article}
+%\usepackage{a4paper,makeidx}
+%\usepackage[dvips]{graphics}
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{subcaption}
+%\documentclass[smallextended]{svjour3}
+%\usepackage[dvips]{graphicx}
+%\usepackage{subfig}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\righthyphenmin=55
+\newlength{\gnat}
+\newlength{\figheight}
+\newlength{\figwidth}
+\setlength{\textwidth}{6in}
+\setlength{\evensidemargin}{0.2in}
+\setlength{\oddsidemargin}{0.2in}
+\setlength{\topmargin}{0.0in}
+\setlength{\textheight}{9in}
+\setlength{\headsep}{10pt}
+\setlength{\columnsep}{0.375in}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{claim}{Claim}
+
+\def\IR{\Bbb R}
+\def\tF{{\tilde F}}
+\def\tG{{\tilde G}}
+\def\tE{{\tilde E}}
+\def\hF{{\hat F}}
+\def\hG{{\hat G}}
+\def\hE{{\hat E}}
+\def\oF{{\overline{F}}}
+\def\oG{{\overline{G}}}
+\def\CC{{\cal C}}
+\def\uF{{\underline{F}}}
+\def\uG{{\underline{G}}}
+\def\oC{{\overline{C}}}
+\def\uC{{\underline{C}}}
+\baselineskip= 20pt
+%\input{tcilatex}
+
+\begin{document}
+
+\section{Italy}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$ \\
+     \hline
+     \hline
+Lower	&243989.3 & 	&0.6358974&	0.02811848&	7.231623	&4165662	&117132.09 & & & \\
+     \hline
+MLE	    &245430.6 & 234801 &0.6051282&	0.02830502&	9.990110	&2831292	&80139.78 & 0.377 & 0.1685 & 0.0635\\
+     \hline
+ Upper	&248313.1& 	&0.5846154&	0.02885256&	12.119187&	2066929&	59636.20 & & &\\
+    \hline
+\end{tabular}
+    \caption{Italy 25/05/2020}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$ \\
+     \hline
+     \hline
+Lower & 244571.6 & & 0.6051282&	0.02903673	&10.274608&	2849691& 82745.71 & & &  \\
+     \hline
+MLE	 & 246234.2	& 234801 &0.6051282&	0.02961305	&9.970771	&2512856	&74413.31 & 0.4096& 0.1932 & 0.0791 \\
+     \hline
+Upper& 248288.1	& & 0.5948718&	0.03022881	&10.821537&	2013034& 60851.62 & & & \\
+    \hline
+\end{tabular}
+    \caption{Italy 07/06/2020}
+\end{table}
+
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{italy_figure_a_07_06_2020.jpeg}
+        \caption{Italy Fig A 07/06/2020}
+        \label{fig:italy_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{italy_figure_b_07_06_2020.jpeg}
+        \caption{Italy Fig B 07/06/2020}
+        \label{fig:italy_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{italy_figure_a_25_05_2020.jpeg}
+        \caption{Italy Fig A 25/05/2020}
+        \label{fig:italy_figure_a_25_05_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{italy_figure_b_25_05_2020.jpeg}
+        \caption{Italy Fig B 25/05/2020}
+        \label{fig:italy_figure_b_25_05_2020}
+    \end{subfigure}
+\end{figure}
+
+\section{USA}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$\\
+     \hline
+     \hline
+Lower	&3033661&	&0.3076923	&0.01059461	&642.0017	&8090683 &	85717.62   & & &\\
+\hline
+MLE	    &3370399& 1920061	&0.2461538	&0.01064964	&1380.2648&	6054199	& 64475.06  & 0.1922  & 0.1183 & 0.0227 \\
+\hline
+Upper	&3659032&	&0.2102564	&0.01069611	&2147.5641&	5181837	& 55425.47     & & &\\
+\hline
+\end{tabular}
+    \caption{USA 07/06/2020}
+\end{table}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$\\
+     \hline
+     \hline
+Lower&2491077&	&0.3897436	&0.01066084&	237.8659	&13358566&	142413.56    & & &  \\
+\hline
+MLE	 & 2699321 & 1920061	&0.3333333	&0.01069746&	478.2482	&9452771	& 101120.62 & 0.2938  & 0.143 & 0.042 \\
+\hline
+Upper&3032512&	&0.2717949	&0.01074971&	1018.9861&	6828087&	73399.93     & & &  \\
+\hline
+\end{tabular}
+    \caption{USA 25/05/2020}
+\end{table}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{usa_figure_a_07_06_2020.jpeg}
+        \caption{USA Fig A 07/06/2020}
+        \label{fig:usa_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{usa_figure_b_07_06_2020.jpeg}
+        \caption{USA Fig B 07/06/2020}
+        \label{fig:usa_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{usa_figure_a_25_05_2020.jpeg}
+        \caption{USA Fig A 25/05/2020}
+        \label{fig:usa_figure_a_25_05_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{usa_figure_b_25_05_2020.jpeg}
+        \caption{USA Fig B 25/05/2020}
+        \label{fig:usa_figure_b_25_05_2020}
+    \end{subfigure}
+\end{figure}
+
+\section{Germany}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$\\
+     \hline
+     \hline
+Lower	&193110.5&	&0.1000000&	0.06877377&	2792.17527	&132001.1	&9078.214   & & & \\
+     \hline
+MLE	    &198917.0& 185450	&0.3820513&	0.06987876&	131.00392	&197905.3	&13829.378  & 0.1268 & 0.3430 &  0.0435 \\
+     \hline
+Upper	&205884.7&	&0.5743590&	0.07201384&	16.04885	&328436.3	&23651.962  & & & \\
+\hline
+\end{tabular}
+    \caption{Germany 07/06/2020}
+\end{table}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{germany_figure_a_07_06_2020.jpeg}
+        \caption{Germany Fig A 07/06/2020}
+        \label{fig:germany_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{germany_figure_b_07_06_2020.jpeg}
+        \caption{Germany Fig B 07/06/2020}
+        \label{fig:germany_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
+
+\section{Brazil}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$\\
+     \hline
+     \hline
+Lower &  3309261 &  &0.890 &0.0443 &0.380& 290588819&  12874616 & & &  \\
+     \hline
+MLE  & 190959879 & 672846 &0.849 &0.0456 &0.569&  17489513&   797648  & 0.5796 & 0.2552&  0.1479  \\
+     \hline
+Upper & 212405664&  &0.849 &0.0456 &0.569&  17417356.&   794942 & & &  \\
+\hline
+\end{tabular}
+    \caption{Brazil 07/06/2020}
+\end{table}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{brazil_figure_a_07_06_2020.jpeg}
+        \caption{Brazil Fig A 07/06/2020}
+        \label{fig:brazil_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{brazil_figure_b_07_06_2020.jpeg}
+        \caption{Brazil Fig B 07/06/2020}
+        \label{fig:brazil_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
+
+\section{Belgium}
+
+\begin{table}[ht]
+    \centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+     \hline
+     CI & K & $X_{max}$ & $\alpha$ & $\gamma$ & $\beta$ & $I_0$ & Slope ratio  & $\rho$ & $\sigma_x$ & $\sigma_w$\\     \hline
+     \hline
+Lower	&61140.24&	&0.5307692	&0.01384969	&11.84457	&1772938& 	24554.637 &&&  \\
+     \hline
+MLE	    &61509.80& 59072 &0.4974359	&0.01398024	&16.06440	&1228774& 	17178.552 & 0.2403 & 0.2960 & 0.0711  \\
+     \hline
+Upper	&62248.92&	&0.3692308	&0.01414968	&56.46743	&511663	&   7239.866  &&&  \\
+\hline
+\end{tabular}
+    \caption{Belgium 07/06/2020}
+\end{table}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{belgium_figure_a_07_06_2020.jpeg}
+        \caption{Belgium Fig A 07/06/2020}
+        \label{fig:belgium_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   \includegraphics[scale=0.25]{belgium_figure_b_07_06_2020.jpeg}
+        \caption{Belgium Fig B 07/06/2020}
+        \label{fig:belgium_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
+
+\end{document}
+

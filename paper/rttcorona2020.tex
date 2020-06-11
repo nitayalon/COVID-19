@@ -237,32 +237,28 @@ Figures \ref{france}, \ref{germany} and \ref{italy} display the logarithms of th
 
 \section{Preliminary data handling and analysis} \label{preliminarysection}
 
-Equation (\ref{DEforR}) expresses the reasonable premise that new removed cases are proportional to the number of infected cases. I.e., the cumulative number $R$ of removed cases should be proportional to the cumulative sum of currently infected cases. A linear regression with slope $\gamma$ and zero intercept should manifest this relationship. After checking that this is roughly so, the empirically measured affected cases $X$ are kept intact but its division into removed cases $R$ and infected cases $I$ is modified minimally so that the regression relation will hold. The method by which this has been done can be found in the Appendix. Figures NNN display the raw and modified data for a number of countries. This regression provides an initial estimate for $\gamma$, illustrated in Table \ref{tabl}.
+Equation (\ref{DEforR}) expresses the reasonable premise that new removed cases are proportional to the number of infected cases. I.e., the cumulative number $R$ of removed cases should be proportional to the cumulative sum of currently infected cases. A linear regression with slope $\gamma$ and zero intercept should manifest this relationship. After checking that this is roughly so, the empirically measured affected cases $X$ are kept intact but its division into removed cases $R$ and infected cases $I$ is modified minimally so that the regression relation will hold. The method by which this has been done can be found in the Appendix. Figures NNN display the raw and modified data for a number of countries. This regression provides an initial estimate for $\gamma$.
 
 \bigskip
 
-Equation (\ref{DEforI}) states that early in the epidemic $dI(t) \approx \beta (I(t))^\alpha$ or ${{(I(t))^{1-\alpha}} \over  {1-\alpha}} \approx \beta (t-t_0)$ for some $t_0$. Warned by the noisy early behavior evident in Figures \ref{france}, \ref{germany} and \ref{italy}, let Day$1$ be the date when the number of infected cases first reaches, say, $400$ cases, and let Day$2$ be the date when the number of infected cases first reaches, say, one third of the maximal observed number of infected cases. The parameter $\alpha$ can be initially estimated from this data time range by the value that maximizes the correlation coefficient between $(I(t))^{1-\alpha}$ and time. If this correlation coefficient is close enough to $1$, the $\alpha$-model can be adopted, and the date $t_0$ when the epidemic started, can be assessed, together with $\alpha$ and $\beta$. Table \ref{tabl} illustrates some results of this preliminary analysis as $\alpha_1$ and $\beta_1$. Correlation coefficients are not reported, but all nine came out $0.99$ and above.
-
-By equation (\ref{DEforX}), on this time interval from Day$1$ to Day$2$ the increments of $X$ should equal approximately $\beta I^\alpha$. In other words, the logarithm of (a centered week-long moving average of) the daily increments of $X$ should satisfy the linear regression $\log(\beta)+\alpha \log(I)$. The corresponding regression estimates of $\alpha$ and $\beta$ are illustrated in Table \ref{tabl} as $\alpha_2$ and $\beta_2$.
-
-The purpose in performing this preliminary analysis is to display in simple terms that data does indeed conform to the SIR model augmented by the introduction of $\alpha$, avoiding still the issue of $K$. No attempt to attach significance statements to these findings is followed at this preliminary stage. That will be the role of the RTT likelihood model.
+Equation (\ref{DEforI}) states that early in the epidemic $dI(t) \approx \beta (I(t))^\alpha$ or ${{(I(t))^{1-\alpha}} \over  {1-\alpha}} \approx \beta (t-t_0)$ for some $t_0$. Let Day$1$ be the date when the number of infected cases first reaches, say, $100$ cases, and let Day$2$ be the date when the number of infected cases first reaches, say, half the maximal observed number of infected cases. The parameter $\alpha$ can be initially estimated by the one that maximizes the correlation coefficient between $(I(t))^{1-\alpha}$ and time. If this correlation coefficient is close enough to $1$, the $\alpha$-model can be adopted, and the date $t_0$ when the epidemic started, can be assessed, together with $\alpha$ and $\beta$. Table \ref{tabl} displays results of this preliminary analysis.
 
 \begin{table}
 \begin{center}
-\begin{tabular}{l|cccccccc|r}
-Country & $\alpha_1$ & $\beta_1$ & $\alpha_2$ & $\beta_2$ & $\gamma$ & Day$1$ & Day$2$ & Start  & \\ \hline
-Belgium & 0.78  & 1.3469   & 0.70   & 2.9703  & 0.0035   &  36  & 62   & 24 &   \\
-Brazil  & 0.59    &4.1448       &  0.72     & 2.1864   & 0.0540   & 58   & 104 & 52      &   \\
-Chile   & 0.31 &16.940 &0.57 &  3.929 & 0.0450 & 59 & 106 & 54 &  \\
-France  & 0.73 & 1.861 &  0.77& 1.544 &0.0278 & 44 & 67 & 34 & \\
-Germany & 0.42 & 43.781&0.40 & 76.869 & 0.0621 & 51 & 62 & 50 &  \\
-Israel & 0.75 &  1.820& 0.30 & 52.137 & 0.0379& 60 & 67 & 51 & \\
-Italy  & 0.78 & 1.268& 0.77 & 1.666 & 0.0255 & 35 & 58 & 23 & \\
-Sweden &0.77 &0.558 & 0.69 & 1.321 & 0.0181 & 50 & 77 & 19 &    \\
-USA   & 0.85 &1.070 & 0.80 &1.936 &0.0116 & 46 & 74 & 32 &   \\ \hline
+\begin{tabular}{l|ccccccc|r}
+Country & $\alpha$ & $\beta$ & $\gamma$ & Day$1$ & Day$2$ & Start & $\rho$ & \\ \hline
+Belgium & 0.73  & 0.1509   & 0.0035   & 33   & 67   &  28  & 0.9991   &    \\ 
+Brazil  & 0.63    & 0.4034       &  0.0540     & 55   & 112   & 50   & 0.9984      &   \\
+Chile   & 0.48 & 1.2318 &0.0450 &  55 &  113 & 50 & 0.9897 &  \\
+France  & 0.91 & 0.0025 &  0.0278& 38 & 72 & 1 & 0.9973 &  \\ 
+Germany & 0.47 & 7.7073 &0.0621 & 49 &  65 & 50 & 0.9978 &   \\
+Israel & 0.01 &  292.61 & 0.0379 & 57 &  84& 59 & 0.9870 & \\
+Italy  & 0.85 & 0.0145 & 0.0255 &  32 & 62 & 9 & 0.9992 &  \\
+Sweden &0.57 &0.4912 & 0.0181 & 47 &  86 & 40 & 0.9972 &     \\
+USA   & 0.84 & 0.0275 & 0.0116 & 41 &  80 & 32 & 0.9950 &    \\ \hline
 \end{tabular}
 \caption{
-Initial parameter estimates and time ranges
+Initial parameter estimates, time ranges and correlation coefficients
 \label{tabl}
 }
 \end{center}
@@ -271,11 +267,7 @@ Initial parameter estimates and time ranges
 
 \bigskip
 
-Data for the above and further analysis, taken from the COVID-19 Data Repository of
-the Center for Systems Science and Engineering (CSSE) at Johns Hopkins
-University, consist of the empirical $X$ data and the modified $I$ and $R$ data, from Day$1$ onwards.
-
-The next section will introduce parameter estimation of $K,\alpha, \beta,\gamma$ under the SIR equations.
+Data for further analysis consist of the empirical $X$ data and the modified $I$ and $R$ data, from Day$1$ onwards. The next section will introduce parameter estimation of $K,\alpha, \beta,\gamma$ under the SIR equations.
 
 \section{RTT applied to Covid19 2020} \label{RTTsection}
 
@@ -369,13 +361,14 @@ Graphs are provided next.
 
 \section{A remark on incremental new cases} \label{More}
 
-In Epidemiology and Biostatistics it is a good practice to establish probability models for disease progress. Analysis reported here has been done without reference to particular probability models, except the Gaussian working assumption on Random Time. In principle, the increments \linebreak $X(i)-X(i-1)$ should be independent, Poisson distributed with some local mean, provided by the differential equations, and this principle could provide a useful quantitative tool. Poisson random variables $Z$, positive and with variance equal to the mean, should display when this mean is at least $5$ or so, the remarkable property that $\sqrt{Z}$ has standard deviation very close to, and fast converging to ${1 \over 2}$. Whether or not this theoretical fact is satisfied empirically by the data $\sqrt{max(1,X(i)-X(i-1))}$ can be checked without reference to the differential equations. Simply, choose a window size $WS$ such as the week applied in Section \ref{preliminarysection} to obtain moving averages unaffected by weekend drops, or somewhat longer, do for each $i$ linear regression on time of the $X$-increments within the window around $i$, and record the averages and slopes or correlation coefficients of these lines as well as the standard deviations $\hat{\sigma_i}$ of the residuals. These standard deviations are supposed to estimate ${1 \over 2}$, or else assist in data diagnosis or identify a batch-size of arrivals. Some departure from Poisson could be explained by the less cases reported on weekends or by delayed reporting, that could be more the rule than the exception. In any case, the empirical standard deviations $\hat{\sigma_i}$ are so much bigger than ${1 \over 2}$ that probabilistic modelling methods based on the Poisson hypothesis are not justified.
+In principle, the increments $X(i)-X(i-1)$ should be independent, Poisson distributed with some local mean, provided by the differential equations. Poisson random variables $Z$, positive and with variance equal to the mean, should display when this mean is at least $5$ or so, the remarkable property that $\sqrt{Z}$ has standard deviation very close to, and fast converging to ${1 \over 2}$. Whether or not this theoretical fact is satisfied empirically by the $F(i)=\sqrt{max(1,X(i)-X(i-1))}$ data can be checked without reference to the differential equations. Simply, choose a window size $WS$ such as $5$ or $10$, do for each $i$ linear regression of $F(i-WS:i+WS)$ on time $(i-WS:i+WS)$, and record the averages and slopes or correlation coefficients of these lines as well as the standard deviations $\hat{\sigma_i}$ of the residuals. These standard deviations are supposed to estimate ${1 \over 2}$, or else assist in data diagnosis or identify a batch-size of arrivals. Italy and USA display weekly seasonality in which significantly less cases are reported on weekends, and delayed reporting could be more the rule than the exception. In any case, the empirical standard deviations $\hat{\sigma_i}$ are so much bigger than ${1 \over 2}$ that probabilistic modelling methods based on the Poisson hypothesis are not justified.
+
+Graphs are provided next.
 
 \section{Appendix 1: Correction of the number of infected cases}
 
 Let $B$ be the $n$ by $n$ matrix with zeros above the diagonal and ones on and below the diagonal. Let $A$ be the $2 n$ by $n$ matrix that has $\gamma B$ in the first $n$ rows and $\gamma B$ plus the identity matrix in the last $n$ rows. Let $V$ be a column vector with $R$ in the top half and $X$ in the bottom half. The regression equation $A \hat{I} \approx V$
-precisely expresses that $R$ should be $\beta$ times the cumulative sum of the $I$ values, and $X$ should be the latter vector (approximately $R$) plus $I$. The "regression coefficients" $\hat{I}$ are a compromise to manifest this requirement. Once determined, the removed cases are re-defined as $\hat{R}=X-\hat{I}$. The initial parts
- of the vectors $\hat{R}$ and $\hat{I}$ are further modified if necessary to prevent negative values.
+precisely expresses that $R$ should be $\beta$ times the cumulative sum of the $I$ values, and $X$ should be the latter vector (approximately $R$) plus $I$. The "regression coefficients" $\hat{I}$ are a compromise to manifest this requirement. Once determined, the removed cases are re-defined as $\hat{R}=X-\hat{I}$. The initial part of the vectors $\hat{R}$ and $\hat{I}$ are further modified if necessary to prevent negative values.
 
 
 
@@ -385,10 +378,25 @@ precisely expresses that $R$ should be $\beta$ times the cumulative sum of the $
 Thanks are due to Ilan Eshel from prompting this study and to Vahid
 Bokharaie, Amit Huppert, Eytan Ruppin, Laura Sacerdote and David Steinberg for helpful suggestions.
 
-The data analyzed in this work is taken from the COVID-19 Data Repository of
+The data analyzed in this work is taken from the COVID-19 Data Repository by
 the Center for Systems Science and Engineering (CSSE) at Johns Hopkins
 University.
 
+\section{Figures}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{italy_figure_a_07_06_2020.eps}
+        \caption{Italy Fig A 07/06/2020}
+        \label{fig:italy_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   
+	\includegraphics[scale=0.25]{italy_figure_b_07_06_2020.eps}
+        \caption{Italy Fig B 07/06/2020}
+        \label{fig:italy_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
 
 \baselineskip= 28pt
 
@@ -412,3 +420,4 @@ Algebra and its Applications}, {\bf 264}, 173–-188.
 \end{thebibliography}
 
 \end{document}
+

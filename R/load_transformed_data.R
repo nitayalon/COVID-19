@@ -1,4 +1,4 @@
-uploadTransformData <- function(state_name){
+uploadTransformData <- function(state_name, just_empirical_data = T){
   states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium'))
   # Original data 
   confirmed_cases <- global_confirmed_cases %>% 
@@ -35,12 +35,15 @@ uploadTransformData <- function(state_name){
     full_data_for_export %>% 
     select(-var) %>% 
     as.matrix()
+  colnames(empirical_covid_data) = c('X','V','W')
+  if(just_empirical_data){
+    return(empirical_covid_data)
+  }
   # linear regression data
   index = which(states_list == state_name)
   transformed_covid_data <- transformed_data[,(3 * index + -2) : (3 * index)]
   names(transformed_covid_data) <- c('X','Y','VW')
   
-  colnames(empirical_covid_data) = c('X','V','W')
   empirical_data = empirical_covid_data %>% 
     as.tibble() %>% 
     mutate(Y = X - (V+W), VW = V+W) %>% 

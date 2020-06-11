@@ -17,10 +17,10 @@ GridSearchInnerLoop <- function(X,VW,Y,
   x = round(res[1,],7)
   vw = round(res[2,],7)
   y = round(res[3,],7)
-  for(i in 1:n)
+  T1[1,1] = sum(round(x,5)<=round(X[1],5))
+  T1[1,2] = sum(round(vw,5)<=round(VW[1],5))
+  for(i in 2:n)
   {
-    # T1[i,1] = sum(round(x,5)<=round(X[i],5))
-    # T1[i,2] = sum(round(vw,5)<=round(VW[i],5))
     T1[i,1] = sum(x<=X[i])
     T1[i,2] = sum(vw<=VW[i])
   }

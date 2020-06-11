@@ -44,10 +44,10 @@ population_list <- list(
   Argentina =    45153114 
 ) 
 
-state <- 'Belgium'
-date = '07_06_2020'
-belgium_grid_search_results_07_06_2020 <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.2,0.6,length.out = 40))
-save(x = belgium_grid_search_results_07_06_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
+state <- 'US'
+date = '25_05_2020'
+us_grid_search_results_25_05_2020 <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.2,0.4,length.out = 40))
+save(x = us_grid_search_results_25_05_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 
 # brazil_K_grid <- c(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[1], 
 #                     brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$k[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$llk)], 
