@@ -3,7 +3,6 @@ plotTrajectories <- function(empirical_nation_data,
                              trajectories,
                              dates, 
                              last_date, 
-                             nation_name, 
                              ylim = c(0,25),
                              scale_factor = 1e5,
                              starting_day = 60,
@@ -47,9 +46,10 @@ plotTrajectories <- function(empirical_nation_data,
        ylab = sprintf("Number of cases * %s",scale_factor), xlab = 'Days', 
        xlim = c(emprical_starting_day, last_date),
        ylim = ylim,
-       lty = 1, lwd = 2,
-       main = sprintf("Covid19 data %s",nation_name),
-       cex = 0.5)
+       lty = 1, 
+       lwd = 2,
+       cex = 0.5,
+       cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
   # lines(days, vw_mle_upper[(1:length(x_mle_upper)) %% 100 == 0][1:length(days)] / scale_factor,col = 'orange', type = 'b', pch=13, lwd = 2, cex = 0.5)
   lines(days, y_mle_upper[(1:length(x_mle_upper)) %% 100 == 0][1:length(days)] / scale_factor, col = 'orange', type = 'b', pch=19, lwd = 2, cex = 0.5)
   
@@ -78,10 +78,9 @@ plotTrajectories <- function(empirical_nation_data,
   # lines(seq(emprical_starting_day,last_data_date - 1, 'day'), empirical_x[empirical_day_start:length(empirical_x)] / scale_factor, col = 'blue', type = 'b', pch=7, lwd = 1, cex = 0.5)
   # lines(seq(emprical_starting_day,last_data_date - 1, 'day'), empirical_vw[empirical_day_start:length(empirical_x)] / scale_factor, col = 'blue', type = 'b', pch=13, lwd = 1, cex = 0.5)
   # lines(seq(emprical_starting_day,last_data_date - 1, 'day'), empirical_y[empirical_day_start:length(empirical_y)] / scale_factor, col = 'blue', type = 'b', pch=19, lwd = 1, cex = 0.5)
-  
-  lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$X[empirical_day_start:length(empirical_x)] / scale_factor, col = 'blue4', type = 'b', pch=7, lwd = 1, cex = 0.5)
-  lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$VW[empirical_day_start:length(empirical_x)] / scale_factor, col = 'blue4', type = 'b', pch=13, lwd = 1, cex = 0.5)
-  lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$Y[empirical_day_start:length(empirical_x)] / scale_factor, col = 'blue4', type = 'b', pch=19, lwd = 1, cex = 0.5)
+  lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$X[empirical_day_start:length(transformed_nation_data$X)] / scale_factor, col = 'blue4', type = 'b', pch=7, lwd = 1, cex = 0.5)
+  lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$VW[empirical_day_start:length(transformed_nation_data$X)] / scale_factor, col = 'blue4', type = 'b', pch=13, lwd = 1, cex = 0.5)
+  lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$Y[empirical_day_start:length(transformed_nation_data$X)] / scale_factor, col = 'blue4', type = 'b', pch=19, lwd = 1, cex = 0.5)
    
   lines(days,x_mle_mid[(1:length(x_mle_mid)) %% 100 == 0][1:length(days)] / scale_factor, col = 'red', type = 'b', pch=7, lwd = 1, cex = 0.5)
   lines(days,vw_mle_mid[(1:length(vw_mle_mid)) %% 100 == 0][1:length(days)]/ scale_factor, col = 'red', type = 'b', pch=13, lwd = 1, cex = 0.5)

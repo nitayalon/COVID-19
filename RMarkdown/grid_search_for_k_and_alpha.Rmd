@@ -194,16 +194,16 @@ reportCovidGreeks(germany_trajectories, germany_K_grid, germany_alpha_grid)
 
 
 ```{r israel grid search}
-state <- 'Belgium'
+state <- 'Brazil'
 date = '07_06_2020'
 load(sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 
-belgium_K_grid <- c(belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$K_CI[1], 
-               belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$k[which.max(belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$llk)], 
-               belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$K_CI[2])
-belgium_alpha_grid <- c(NA, belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
-belgium_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$environment_data, belgium_K_grid[i],belgium_alpha_grid[i],alpha_grid = seq(0.1,0.8,length.out = 40))})
-belgium_alpha_grid <- c(belgium_trajectories[[1]]$alpha, belgium_alpha_grid[2], belgium_trajectories[[3]]$alpha)
+brazil_K_grid <- c(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[1], 
+               brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$k[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+               brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[2])
+brazil_alpha_grid <- c(NA, brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
+brazil_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(brazil_grid_search_results$nation_wide_rtt_results$environment_data, brazil_K_grid[i],brazil_alpha_grid[i],alpha_grid = seq(0.8,0.9,length.out = 40))})
+brazil_alpha_grid <- c(brazil_trajectories[[1]]$alpha, brazil_alpha_grid[2], brazil_trajectories[[3]]$alpha)
 ```
 
 ```{r germany profile likelihood}
@@ -214,11 +214,24 @@ abline(h = -2.5, col = 'red')
 
 ```{r plot israel data}
 dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/11/2020',format = '%d/%m/%y'),'day')
-last_date <- as.Date('01/11/2020',format = '%d/%m/%y')
-plotTrajectories(belgium_grid_search_results_07_06_2020$nation_wide_rtt_results$environment_data,
-                 belgium_grid_search_results_07_06_2020$covid_data_sets$transformed_covid_data[60:nrow(belgium_grid_search_results_07_06_2020$covid_data_sets$transformed_covid_data),],
-                 belgium_trajectories,dates,last_date,'belgium',ylim = c(0,0.8),starting_day = 60,scale_factor = 1e5)
+last_date <- as.Date('31/07/2020',format = '%d/%m/%y')
+plotTrajectories(brazil_grid_search_results$nation_wide_rtt_results$environment_data,
+                 brazil_grid_search_results$covid_data_sets$transformed_covid_data,
+                 brazil_trajectories,
+                 dates,
+                 last_date,
+                 'Brazil',ylim = c(0,4.5),
+                 empirical_day_start = 70,
+                 starting_day = 70,
+                 scale_factor = 1e6)
 ```
+
+```{r}
+plot(brazil_trajectories[[1]]$x / 1e6, col = 'green', ylim = c(0,50))
+lines(brazil_trajectories[[2]]$x/ 1e6, col = 'red')
+lines(brazil_trajectories[[3]]$x/ 1e6, col = 'orange')
+```
+
 
 ```{r report grid seach results israel}
 reportCovidGreeks(belgium_trajectories, belgium_K_grid, belgium_alpha_grid)
@@ -260,11 +273,10 @@ global_confirmed_cases %>%
   unique()
   
 state <- 'Switzerland'
-date = '05_25_2020'
-swiss_data = uploadTransformData(state)
-plot(swiss_data[,1] / 1e3)
-plot((swiss_data[,1] - (swiss_data[,2] + swiss_data[,3])) / 1e3)
+date = '07_06_2020'
+load(sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 
-
+plot(swiss_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha)
+plot(swiss_grid_search_results_07_06_2020$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K)
 ```
 

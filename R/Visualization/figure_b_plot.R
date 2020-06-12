@@ -37,8 +37,7 @@ plotTrajectoriesB <- function(empirical_nation_data,
        ylim = ylim,
        lty = 1, 
        lwd = 2,
-       main = sprintf("Covid19 data %s",nation_name),
-       cex = 0.5)
+       cex = 0.5,cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
   lines(days, y_mle_mid[(1:length(y_mle_mid)) %% 100 == 0][1:length(days)] / scale_factor, col = 'orange', type = 'b', pch=19, lwd = 2, cex = 0.5)
   lines(days, vw_mle_mid[(1:length(vw_mle_mid)) %% 100 == 0][1:length(days)]/ scale_factor, col = 'orange', type = 'b', pch=19, lwd = 2, cex = 0.5)
   

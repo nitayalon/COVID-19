@@ -41,28 +41,18 @@ population_list <- list(
   Sweden    =    10092886 ,
   Israel    =         8645060 ,
   Austria   =      9001207 ,
-  Argentina =    45153114 
+  Argentina =    45153114, 
+  Switzerland =     8651338 
 ) 
 
-state <- 'US'
-date = '25_05_2020'
-us_grid_search_results_25_05_2020 <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.2,0.4,length.out = 40))
-save(x = us_grid_search_results_25_05_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
+# state <- 'US'
+# print(state)
+# date = '25_05_2020'
+# us_grid_search_results_25_05_2020 <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.2,0.4,length.out = 40), cut_off_day = 125)
+# save(x = us_grid_search_results_25_05_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
+# state <- 'Switzerland'
+# print(state)
+date = '07_06_2020'
+swiss_grid_search_results_07_06_2020 <- mainFunction(state, 50, population_list[[state]], alpha_grid = seq(0.55,0.65, length.out = 40), hhh_grid = c(0.1, 25))
+save(x = swiss_grid_search_results_07_06_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 
-# brazil_K_grid <- c(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[1], 
-#                     brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$k[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$llk)], 
-#                     brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[2])
-# brazil_alpha_grid <- c(NA, brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk)], NA)
-# brazil_trajectories <- lapply(1:3, function(i){predictCovidTrajectory(brazil_grid_search_results$nation_wide_rtt_results$environment_data, brazil_K_grid[i],brazil_alpha_grid[i],alpha_grid = seq(0.5,0.9,length.out = 40))})
-# brazil_alpha_grid <- c(brazil_trajectories[[1]]$alpha, brazil_alpha_grid[2], brazil_trajectories[[3]]$alpha)
-# 
-# plot(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K)
-# abline(h = -2.5, col = 'red')
-# plot(brazil_grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha)
-# abline(h = -2.5, col = 'red')
-# dates <- seq(as.Date('22/01/2020',format = '%d/%m/%y'),as.Date('01/12/2020',format = '%d/%m/%y'),'day')
-# last_date <- as.Date('01/12/2020',format = '%d/%m/%y')
-# plotTrajectories(brazil_grid_search_results$nation_wide_rtt_results$environment_data,
-#                  brazil_grid_search_results$covid_data_sets$transformed_covid_data[start_day:nrow(brazil_grid_search_results$covid_data_sets$transformed_covid_data),],
-#                  brazil_trajectories,dates,last_date,'brazil',ylim = c(0,30),starting_day = start_day,scale_factor = 1e6)
-# reportCovidGreeks(brazil_trajectories, brazil_K_grid, brazil_alpha_grid)

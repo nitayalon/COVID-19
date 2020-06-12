@@ -42,6 +42,7 @@ GridSearchInnerLoop <- function(X,VW,Y,
   VAR1=mean(diag(COV))
   OBJB=sum(log(AD))+(n/2)*log(COV[1,1]) # BM for single component for X only
   return(list(TT = TT,
+              T_final = T_final,
               K = K,
               beta = beta,
               gamma = gamma,
