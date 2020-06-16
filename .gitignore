@@ -2,3 +2,6 @@
 .Rproj.user
 .csv
 .pdf
+/RandomTimeTransformation/build/
+/RandomTimeTransformation/dist/
+/build/

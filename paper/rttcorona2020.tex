@@ -50,7 +50,9 @@
 
 \begin{document}
 
-\title {Random time transformation analysis of the Covid19 Pandemic 2020}
+\title {Random time transformation analysis of Covid19 2020 \\
+WORKING DRAFT. PLEASE DON'T DISTRIBUTE
+}
 
 \author {
 Nitay Alon
@@ -72,8 +74,7 @@ Isaac Meilijson
 \pagenumbering{arabic}
 
 \begin{abstract}
-
-
+\noindent The SIR epidemiological equations model new affected and removed cases as roughly proportional to the current number of infected cases. The present report adopts an alternative that has been considered in the literature, in which the number of new affected cases is proportional to the $\alpha \le 1$ power of the number of infected cases. After arguing that $\alpha=1$ models exponential growth while $\alpha<1$ models polynomial growth, a simple method for parameter estimation in differential equations subject to noise, the random-time transformation RTT of Bassan, Meilijson, Marcus and Talpaz 1997, will be reviewed and applied in an attempt to settle the question as to the nature of Covid19.
 
 %\keywords{
 %\noindent{\bf JEL Classification Numbers:}
@@ -90,21 +91,191 @@ Isaac Meilijson
 
 \section{Introduction} \label{introduction}
 
-\noindent {\bf The SIR epidemiological model}. Let $S(t) = K - X(t)$ be the number of susceptible cases at time $t$, expressed in terms of the number of affected cases $X(t)$ and the possibly unknown parameter $K$ (that may or may not be the population size $N$ usually substituted for $K$). Let $R(t)$ be the removed cases at time $t$, dead ($V(t)$) or recovered ($W(t)=R(t)-V(t)$). Let $I(t)=S(t)-R(t)$ be the number of infected cases at time $t$. The common formulation of the SIR (Susceptible, Infected, Removed) epidemiological model is the variant of the system of ODE
+\noindent {\bf The SIR epidemiological model}. Let $S(t) = K - X(t)$ be the number of susceptible cases at time $t$, expressed in terms of the number of affected cases $X(t)$ and the possibly unknown parameter $K$ (that may or may not be the population size $N$ usually substituted for $K$). Let $R(t)$ be the removed cases at time $t$, dead
+% ($V(t)$)
+or recovered.
+%($W(t)=R(t)-V(t)$).
+Let $I(t)=S(t)-R(t)$ be the number of infected cases at time $t$. The common formulation of the SIR (Susceptible, Infected, Removed) epidemiological model is the variant of the system of ODE
 \begin{eqnarray}
 dX(t) & = & \beta(t) g(I(t)) \max(0,1 - X(t)/K) dt \label{DEforX} \\
-dR(t) & = & \gamma I(t) \label{DEforR} dt \\
-I(t) & = & X(t)-R(t) \label{eqforI}
+dR(t) & = & \gamma I(t) dt \label{DEforR} \\
+I(t) & = & \max(0,X(t)-R(t)) \label{eqforI}
 \end{eqnarray}
-where $K=N$ and $g(x)=x$. The parameter $\beta(t)$ is estimated by smooth local regression of \linebreak $X$-increments with respect to the RHS of (\ref{DEforX}). The ratio ${{\beta(t)} \over \gamma}$ is of primary importance, as its transition from above to below $1$ indicates whether the epidemic is spreading or dwindling, whether the number of infected cases $I$ increases or decreases with time.
+where $K=N$ and $g(x)=x$. The parameter $\beta(t)$ is generally estimated by smooth local regression of \linebreak $X$-increments with respect to the RHS of (\ref{DEforX}). The basic reproduction number $R_0={{\beta(t)} \over \gamma}$ is of primary importance, as its transition from above to below $1$ indicates whether the epidemic is spreading or dwindling, whether the number of infected cases $I$ increases or decreases with time.
 
 \bigskip
 
-At the early stages of the epidemic, the substitution of $K$ by population size $N$ or anything big enough including $\infty$, has similar effects. This report will illustrate on the Covid19 2020 data that if $K$ is allowed to be a free parameter, the SIR system of equations above may accept an almost exact solution in which $\beta$ (and not only $\gamma$) is constant, and $K$ is the asymptote to which the number $X$ of affected cases converges, the maximal sub-population size to become affected, if the conditions prevalent at the monitoring stage stay in effect.
-
+%At the early stages of the epidemic, the substitution of $K$ by population size $N$ or anything big enough including $\infty$, has similar effects, modelling essentially exponential growth if $g(x)=x$.
 Equations (\ref{DEforR}) and (\ref{eqforI}) as well as the linear appearance of the susceptible cases in (\ref{DEforX}) are quite straightforward under a stationary regime, but the role of $I(t)$ in (\ref{DEforX}) needs some attention. The effective vicinity of a susceptible case need not be the entire infected cohort, just as the asymptote of affected cases need not be population size $N$.
 
-Had the function $g$, modelling the impact of the current extent of infection on the emergence of new cases, been known, parameter estimation via these differential equations would have provided (unjustifiably) accurate estimates of the asymptote $K$. The moment $g(x)=x$ is rejected in favor of $g(x)=x^\alpha$ for some $\alpha<1$ as has been repeatedly suggested in the literature (see Bj{\o}rnstad, Finkenst\"{a}dt and Grenfell in their various publications, such as \cite{AAA} and the references therein), this shape parameter $\alpha$ has to be estimated together with $K$ (tacitly, the pair $(\beta, \gamma)$ is always estimated anew). If the estimates $\hat{K}$ and $\hat{\alpha}$ came out quite uncorrelated (empirically established or theoretically assessed by the Fisher information matrix), estimation of the parameter $K$ would have been insensitive to the choice of $\alpha$, that could then be determined once and for all as a compromise value between all countries. This not the case. $\hat{K}$ and $\hat{\alpha}$ are strongly negatively correlated and compensate for each other. Even if the model fits data admirably well {\em in sample} over a proper ridge of $(K,\alpha)$ values, the values of $K$ dramatically differ, and the standard error of $\hat{K}$ exceeds by orders of magnitude the values it would have had for fixed $\alpha$. Still, the Covid19 2020 indicates country by country that the measures taken from March to May 2020 induced rather stationary behavior, with $K$ values strongly significantly finite, not exceeding three times the number of affected cases in mid May 2020. The model $g(x)=x^\alpha$ will be adopted, and the uncertainty due to questioning the model will be ignored. The data for Italy places $\alpha$ around $0.4$ and the data for USA places $\alpha$ around $0.55$.
+This report will illustrate on the Covid19 2020 data that
+%if $K$ is allowed to be a free parameter,
+the SIR system of equations may accept an almost exact solution in which $\beta$ (and not only $\gamma$) is constant, provided $g(\cdot)$ is modelled as $g(x)=x^\alpha$
+for some $\alpha<1$ as has been repeatedly suggested in the literature (see Bj{\o}rnstad, Finkenst\"{a}dt and Grenfell in their various publications, such as \cite{AAA} and the references therein).
+
+$K$ is the asymptote to which the number $X$ of affected cases converges, the maximal sub-population size to become affected. This scenario-dependent random object $K$ will be treated as a parameter.
+
+Had the function $g$, modelling the impact of the current extent of infection on the emergence of new cases, been known, parameter estimation via these differential equations would have provided (unjustifiably) accurate estimates of the asymptote $K$. Once $g(x)=x$ is rejected in favor of \linebreak $g(x)=x^\alpha$ for some $\alpha<1$, this shape parameter $\alpha$ has to be estimated together with $(K , \beta, \gamma)$, and the overall effect on $K$ is less clear-cut.
+
+%The Covid19 2020 indicates country by country that the data from March to May 2020 induced rather stationary behavior, with $K$ values generally strongly significantly finite, not exceeding three times the number of affected cases at the end of May 2020, with $\alpha$ values roughly between $0.5$ and $0.7$, with $\alpha=1$ off limits. The model $g(x)=x$ is adopted throughout.
+
+\bigskip
+
+\noindent {\bf Exponential or asymptotically constant growth?} The cases $\alpha=1$ and $\alpha<1$ are not just variations on a mathematical abstraction. This dichotomy differentiates in principle between exponential and sub-exponential growth. If population is infinite,
+
+The $\alpha=1$ equations
+\begin{eqnarray}
+d X(t) & = & \beta (X(t)-R(t)) dt \label{DEforX1} \\
+d R(t) & = & \gamma (X(t)-R(t)) dt \label{DEforR1}
+\end{eqnarray}
+i.e., $d I(t) = (\beta-\gamma) I(t) dt$, lead to $I(t)=I(0)\exp\{(\beta-\gamma)t\}$, and then $X(t)=X(0)\exp\{\beta t\} \ , \ \linebreak R(t)=R(0)\exp\{\gamma t\}$. This is exponential growth.
+
+The $\alpha<1$ equations
+\begin{eqnarray}
+dX(t) & = & \beta (X(t)-R(t)^\alpha dt \label{DEforX1} \\
+dR(t) & = & \gamma (X(t)-R(t)) dt \label{DEforR1}
+\end{eqnarray}
+i.e.,
+\begin{equation} \label{DEforI}
+d I(t) = (\beta I(t)^\alpha - \gamma I(t))dt
+\end{equation}
+admit a constant solution
+\begin{equation} \label{Isub0}
+I(t) \equiv I_0 = ({\beta \over \gamma})^{1 \over {1-\alpha}}
+\end{equation}
+under which
+\begin{equation} \label{slopes}
+X(t) \approx X(0)+{{\beta^{1 \over {1-\alpha}}} \over {\gamma^{\alpha \over {1-\alpha}}}} t  \ ; \ R(t) \approx R(0)+{{\beta^{1 \over {1-\alpha}}} \over {\gamma^{\alpha \over {1-\alpha}}}} t
+\end{equation}
+are parallel linear functions. I.e., new affected cases and new removed cases are invariant in time, with an invariant level of infected cases.
+This is asymptotically linear growth of the cumulative number of affected cases, with an initial convex polynomial behavior.
+
+\bigskip
+
+But population size is finite, and the target sub-population may be even smaller. If Equation (\ref{DEforX1}) is replaced by Equation (\ref{DEforX}) with $K$ re-incorporated and $g(x)=x^\alpha$, solutions invariably show the typical Covid19 behavior of empirical data, number of infected cases $I(t)$ that rather than converge to $I_0$ defined in (\ref{Isub0}), increase to a maximum (for which $I_0$ is a sort of upper bound) and then decrease, towards zero hopefully.
+
+A word of warning explaining "a sort of", all parameters are estimated jointly under the given empirical data. It is not clear that these parameters, especially $\beta$, apply verbatim to other \linebreak $K$-scenarios. Take into account also that there are other built-in assumptions throughout, that recovered cases become immune, and prevailing conditions don't change. These are issues for further thought.
+
+All countries analyzed in the sequel based on data until early June 2020, with the possible exception of those with insufficient data, display $\alpha$ values far below $1$ (and $K$ values far below $N$). The profile likelihood function of $\alpha$ is generally quite flat, so $\alpha$ is somewhat noisily estimated.
+
+At the end of May 2020 most countries and the world as a whole displayed number of infected cases increasing with time, making estimation more speculative than for countries where the basic reproduction number $R_0$ crossed already below $1$.
+
+\bigskip
+
+Figure \ref{log075}, based roughly on Brazil data analysis, displays the logarithm of the theoretical solution to the SIR equations for $500$ days with $\alpha=0.75$, $\beta=2$, $\gamma=0.05$ and arbitrarily chosen $K=500.000$. Figure \ref{log1} preserves $K$ and $\gamma$ from Figure \ref{log075} as well as the initial condition of one affected case, but sets $\alpha=1$. The value of $\beta$ was calibrated as $0.125$ so that the maximal number of infected cases will mimic that of Figure \ref{log075}.
+
+Figures \ref{france}, \ref{germany} and \ref{italy} display the logarithms of the empirical number of affected and infected cases in France, Germany and Italy respectively. The observed data conform with the sub-exponential growth represented by $\alpha<1$.
+
+\begin{figure}
+\begin{center}
+%\subfloat [Second-chance model and absolute standard normal]
+{\includegraphics[width=4in,height=2in]{log075.eps}}
+% \qquad
+%{\includegraphics[width=2in,height=2in]{Fig3.eps}}
+\end{center}
+%\begin{center}
+\caption{Logarithm of affected, infected and removed cases under $\alpha=0.75 \ , \ \beta=2 \ , \ \gamma=0.05$  and $K=500.000$}
+%\end{center}
+\label{log075}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+%\subfloat [Second-chance model and absolute standard normal]
+{\includegraphics[width=4in,height=2in]{log1.eps}}
+% \qquad
+%{\includegraphics[width=2in,height=2in]{Fig3.eps}}
+\end{center}
+%\begin{center}
+\caption{Logarithm of affected, infected and removed cases under $\alpha=1 \ , \ \beta=0.125$, $\gamma=0.05$ and $K=500.000$}
+%\end{center}
+\label{log1}
+\end{figure}
+
+\bigskip
+
+\begin{figure}
+\begin{center}
+%\subfloat [Second-chance model and absolute standard normal]
+{\includegraphics[width=4in,height=2in]{france.eps}}
+% \qquad
+%{\includegraphics[width=2in,height=2in]{Fig3.eps}}
+\end{center}
+%\begin{center}
+\caption{Logarithm of affected and infected cases in France, March to May 2020}
+%\end{center}
+\label{france}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+%\subfloat [Second-chance model and absolute standard normal]
+{\includegraphics[width=4in,height=2in]{germany.eps}}
+% \qquad
+%{\includegraphics[width=2in,height=2in]{Fig3.eps}}
+\end{center}
+%\begin{center}
+\caption{Logarithm of affected and infected cases in Germany, March to May 2020}
+%\end{center}
+\label{germany}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+%\subfloat [Second-chance model and absolute standard normal]
+{\includegraphics[width=4in,height=2in]{italy.eps}}
+% \qquad
+%{\includegraphics[width=2in,height=2in]{Fig3.eps}}
+\end{center}
+%\begin{center}
+\caption{Logarithm of affected and infected cases in Italy, March to May 2020}
+%\end{center}
+\label{italy}
+\end{figure}
+
+\noindent {\bf Remark on the $R_0$ transition below $1$}. It is quite popular these days to welcome this transition, wrongly referred to as leaving behind exponential growth in favor of a period of recovery. This transition occurs at the moment when the number of infected cases is at a maximum, where care should be perhaps strengthened rather than relaxed. All graphs above show that the recovery period until the number of infected cases is at a safer low level "in the current wave", is long and slow.  The USA is at the transition point in early June, but if conditions stay stationary, the current wave is predicted to be still at unsafe levels in October. Germany and Italy will experience unsafe levels at least until the end of August.
+
+\section{Preliminary data handling and analysis} \label{preliminarysection}
+
+Equation (\ref{DEforR}) expresses the reasonable premise that new removed cases are proportional to the number of infected cases. I.e., the cumulative number $R$ of removed cases should be proportional to the cumulative sum of currently infected cases. A linear regression with slope $\gamma$ and zero intercept should manifest this relationship. After checking that this is roughly so, the empirically measured affected cases $X$ are kept intact but its division into removed cases $R$ and infected cases $I$ is modified minimally so that the regression relation will hold. The method by which this has been done can be found in the Appendix. Figures NNN display the raw and modified data for a number of countries. This regression provides an initial estimate for $\gamma$.
+
+\bigskip
+
+Equation (\ref{DEforI}) states that early in the epidemic $dI(t) \approx \beta (I(t))^\alpha$ or ${{(I(t))^{1-\alpha}} \over  {1-\alpha}} \approx \beta (t-t_0)$ for some $t_0$. Let Day$1$ be the date when the number of infected cases first reaches, say, $100$ cases, and let Day$2$ be the date when the number of infected cases first reaches, say, half the maximal observed number of infected cases. The parameter $\alpha$ can be initially estimated by the one that maximizes the correlation coefficient between $(I(t))^{1-\alpha}$ and time. If this correlation coefficient is close enough to $1$, the $\alpha$-model can be adopted, and the date $t_0$ when the epidemic started, can be assessed, together with $\alpha$ and $\beta$. Table \ref{tabl} displays results of this preliminary analysis.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{l|ccccccc|r}
+Country & $\alpha$ & $\beta$ & $\gamma$ & Day$1$ & Day$2$ & Start & $\rho$ & \\ \hline
+Belgium & 0.73  & 0.1509   & 0.0035   & 33   & 67   &  28  & 0.9991   &    \\ 
+Brazil  & 0.63    & 0.4034       &  0.0540     & 55   & 112   & 50   & 0.9984      &   \\
+Chile   & 0.48 & 1.2318 &0.0450 &  55 &  113 & 50 & 0.9897 &  \\
+France  & 0.91 & 0.0025 &  0.0278& 38 & 72 & 1 & 0.9973 &  \\ 
+Germany & 0.47 & 7.7073 &0.0621 & 49 &  65 & 50 & 0.9978 &   \\
+Israel & 0.01 &  292.61 & 0.0379 & 57 &  84& 59 & 0.9870 & \\
+Italy  & 0.85 & 0.0145 & 0.0255 &  32 & 62 & 9 & 0.9992 &  \\
+Sweden &0.57 &0.4912 & 0.0181 & 47 &  86 & 40 & 0.9972 &     \\
+USA   & 0.84 & 0.0275 & 0.0116 & 41 &  80 & 32 & 0.9950 &    \\ \hline
+\end{tabular}
+\caption{
+Initial parameter estimates, time ranges and correlation coefficients
+\label{tabl}
+}
+\end{center}
+\end{table}
+
+
+\bigskip
+
+Data for further analysis consist of the empirical $X$ data and the modified $I$ and $R$ data, from Day$1$ onwards. The next section will introduce parameter estimation of $K,\alpha, \beta,\gamma$ under the SIR equations.
+
+\section{RTT applied to Covid19 2020} \label{RTTsection}
+
+The paradigm to be adopted is that $\alpha$ is a (possibly location-dependent) characteristic of the condition, while $K$ is a local-scenario parameter that reflects behavior and regulatory measures. It is important to estimate all parameters jointly in order to obtain as accurate an estimate of $\alpha, \beta, \gamma$ as feasible. This will allow the calculation of $I_0$ in (\ref{Isub0}) as an estimated upper bound (corresponding to an infinite population) on the ongoing number of infected cases as well as of the slope of the linear functions in (\ref{slopes}), the condition incidence per unit time.
+
+%\bigskip
+
+%The data for Italy and USA place $\alpha$ around $0.55$. For now, $\alpha$ will be estimated by MLE $\hat{\alpha}$ country by country. Perhaps the analysis will lead to a reliable empirical Bayes model in which the incorporation of a prior distribution for $\alpha$ into the likelihood function will allow smaller standard errors on $\hat{K}$.
 
 \bigskip
 
@@ -114,26 +285,27 @@ Parameter estimation ($\beta, \gamma, K, \alpha$) will be performed by the Rando
 
 \bigskip
 
-Let the empirical data consist of $(X_1,R_1), (X_2,R_2), \dots, (X_n, R_n)$, from which the infected case totals $Y_j=X_j-R_j$ can be inferred. As expressed above, the value of $\beta$ at time $j$ is noisily provided by $A_j={{X_j-X_{j-1}} \over {Y_{j-1}(1-{{X_j} \over N})}}$ or by a local smooth regression.
+Empirical data consist of $(X_1,R_1), (X_2,R_2), \dots, (X_n, R_n)$, from which the infected case totals $Y_j=X_j-R_j$ can be inferred and then modified in needed, as described in Section \ref{preliminarysection}.
 
-The plan to be pursued is to solve the system above of ODE globally, as adequately as possible, and if this plan succeeds and produces smooth, calculable, functions $(x,r,i)$ that tightly fit the empirical data, we will have a prediction of the maximal future damage $K$ that $X$ will sustain, as well as a smooth function $A(t)={{{dx(t)} \over {dt}} \over {y(t)}}$ that replaces and extrapolates the noisy local growth ratio $A_j$. This function may better pinpoint when did $A$ cross below $\gamma$, or express a predicted transition time below $\gamma$, or warn that such a transition is not due to happen in the foreseeable future.
+The plan to be pursued is to solve the system above of ODE globally, as adequately as feasible, and if this plan succeeds and produces smooth, calculable, functions $(x,r,i)$ that tightly fit the empirical data, it will provide a prediction of the maximal future damage $K$ that $X$ will sustain, as well as of the timing of the transition from increasing to decreasing number of infected cases, or warn that such a transition is not due to happen in the foreseeable future. Furthermore, these functions, that may involve newly defined parameters that epidemiologists have no classical interpretation for, may replace the sparse and noisy empirical data for standard analysis.
+
+With this in mind, here is a detailed description of the RTT method. No attempt will be made to solve the SIR system analytically. Instead, a small increment of time $\delta={1 \over M}$ is set, and the ODE is solved numerically as a difference equation. Interpreting as time the indices of the empirical data, $M=100$ is a reasonable choice. Numerical methods other than the na\"{i}ve choice (\ref{thesolution}) to solve differential equations may be substituted, of which the most obvious is to apply $i$ and $K-x$ in the RHS of (\ref{thesolution}) evaluated at $j-{1 \over 2}$ instead of $j-1$. It only makes a negligible difference. The overly exact choice $M=100$ reduced the need to address this issue.
 
 \bigskip
 
-With this in mind, here is a detailed description of the RTT method. No attempt will be made to solve the SIR system analytically. Instead, a small increment of time $\delta={1 \over M}$ is set, and the ODE is solved numerically as a difference equation. Interpreting as time the indices of the empirical data, $M=100$ is a reasonable choice.
-
 Fix the parameters $\beta, \gamma, K$ and the function $g$, initiate functions $x$ and $r$ as $X_1$ and $R_1$ respectively, initiate $i$ as $X_1-R_1$ and proceed with the definition for $j \ge 2$
 \begin{eqnarray}
-x(j)&=&x(j-1)+\beta g(i(j-1))\max(0,K-x(i-1)) \delta \nonumber \\
+x(j)&=&x(j-1)+\beta g(i(j-1))\max(0,1-{{x(j-1)} \over K}) \delta \nonumber \\
 r(j)&=&r(j-1)+\gamma i(j-1) \delta \nonumber \\
 i(j)&=&max(0,x(j)-r(j)) \label{thesolution}
 \end{eqnarray}
 
-Regular Least Squares essentially estimate parameters by minimizing a sum of squares of the vertical errors $X(i)-x(M i), R(i)-r(M i), I(i)-i(M i)$. The RTT idea works instead with horizontal errors:
+Regular Least Squares essentially estimate parameters by minimizing a sum of squares of the vertical errors $X(i)-x(M i), R(i)-r(M i), I(i)-i(M i)$. Diffusion methods adopt the ODE formulation as drift and incorporate some model for the diffusion term. The Fokker-Planck equations provide transition densities, that define the likelihood function.
+The RTT idea works instead with horizontal errors:
 
 \bigskip
 
-Define the {\em random time trajectory} as starting as $T_1(1)=1, T_2(1)=1$. For $m=2,3,\cdots,n$, let $T_1(m)$ be the smallest $j$ for which $x(j) \ge X_j$ and let $T_2(m)$ be the smallest $j$ for which $r(j) \ge R_j$.
+Define the {\em random time trajectory} as starting as $T_1(1)=1, T_2(1)=1$. For $m=2,3,\cdots,n$, let $T_1(m)$ be the smallest $j$ for which $x(j) \ge X_j$ and let $T_2(m)$ be the smallest $j$ for which $r(j) \ge R_j$. Better yet, let $T_1(m)$ and $T_2(m)$ be the linear interpolants between $j-1$ and $j$ that achieve the values $X_m$ and $R_m$ exactly.
 
 Now solve for $\beta$ and $\gamma$ so that $T_1(n)=T_2(n)=n$. That is, incremental time has average $1$ in both equations. Define $\Delta_1(m)=T_1(m+1)-T_1(m)$ and $\Delta_2(m)=T_2(m+1)-T_2(m)$, for $m=1, 2, \cdots,m-1$ as the (mean-$1$) increments of the $T_1$ amd $T_2$ processes.
 
@@ -141,18 +313,23 @@ Now solve for $\beta$ and $\gamma$ so that $T_1(n)=T_2(n)=n$. That is, increment
 
 If population size $N$ was substituted for $K$ and the identity function for $g$, work is over. For quality-of-fit sanity check, plot the $(x,r,i)$ solution with the $(X,R,I)$ data, that agree at both time endpoints.
 
-Alternatively, consider $K$ and $\alpha$ as free parameters, to be estimated from the data. 
+Alternatively, consider $K$ and $\alpha$ as free parameters, to be estimated from the data.
 
 \bigskip
 
 \noindent {\bf The likelihood function induced by the RTT method}. View the incremental times \linebreak $(\Delta_1(m),\Delta_2(m))$ as observations from a bivariate mean-zero Gaussian distribution, and let $\Sigma$ be their empirical covariance matrix. Up to a multiplicative constant, the normal density evaluated at these data is $(\det(\Sigma))^{-{{n-1} \over 2}}$.
 
+Alternatively, view the processes $T_1(m)-m$ and $T_2(m)-m$ as bivariate Gaussian random walk bridges.
+These two models yield equivalent Gaussian density functions (see Appendix). As a result, the simpler as-if i.i.d. formulation is adopted.
+
 To obtain the likelihood function, the above density must be multiplied by the Jacobian of the transformation. This can be easily seen to be $1$ over the product over the sample of the differential terms $\beta g(X_m-R_m)\max(0,1-X_m/K)$ and $\gamma (X_m-R_m)$, perhaps evaluated at
-${{X_m+X_{m-1}} \over 2}$ and ${{R_m+R_{m-1}} \over 2}$ instead of $X_m$ and $R_m$.
+${{X_m+X_{m-1}} \over 2}$ and ${{R_m+R_{m-1}} \over 2}$ instead of $X_m$ and $R_m$. It doesn't make a difference, as the main regularization role of the Jacobian is to penalize the Gaussian Least Squares into producing smooth solutions.
 
 \bigskip
 
 The parameters $K$ and $\alpha$ are MLE-estimated by maximizing the logarithm of this profile likelihood function, and their standard errors (and correlation coefficient, if needed) are estimated as usual, via the empirical Fisher information.
+
+\section{}
 
 \begin{itemize}
 
@@ -188,19 +365,54 @@ In principle, the increments $X(i)-X(i-1)$ should be independent, Poisson distri
 
 Graphs are provided next.
 
+\section{Appendix 1: Correction of the number of infected cases}
+
+Let $B$ be the $n$ by $n$ matrix with zeros above the diagonal and ones on and below the diagonal. Let $A$ be the $2 n$ by $n$ matrix that has $\gamma B$ in the first $n$ rows and $\gamma B$ plus the identity matrix in the last $n$ rows. Let $V$ be a column vector with $R$ in the top half and $X$ in the bottom half. The regression equation $A \hat{I} \approx V$
+precisely expresses that $R$ should be $\beta$ times the cumulative sum of the $I$ values, and $X$ should be the latter vector (approximately $R$) plus $I$. The "regression coefficients" $\hat{I}$ are a compromise to manifest this requirement. Once determined, the removed cases are re-defined as $\hat{R}=X-\hat{I}$. The initial part of the vectors $\hat{R}$ and $\hat{I}$ are further modified if necessary to prevent negative values.
+
+
 
 
 \section*{Acknowledgements}
 
-Thanks are due to Ilan Eshel from prompting this study and to Eytan Ruppin, Amit Huppert and David Steinberg for helpful suggestions.
+Thanks are due to Ilan Eshel from prompting this study and to Vahid
+Bokharaie, Amit Huppert, Eytan Ruppin, Laura Sacerdote and David Steinberg for helpful suggestions.
+
+The data analyzed in this work is taken from the COVID-19 Data Repository by
+the Center for Systems Science and Engineering (CSSE) at Johns Hopkins
+University.
+
+\section{Figures}
+
+\begin{figure}[htb]
+\centering
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[scale=0.25]{italy_figure_a_07_06_2020.eps}
+        \caption{Italy Fig A 07/06/2020}
+        \label{fig:italy_figure_a_07_06_2020}
+    \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}                                   
+	\includegraphics[scale=0.25]{italy_figure_b_07_06_2020.eps}
+        \caption{Italy Fig B 07/06/2020}
+        \label{fig:italy_figure_b_07_06_2020}
+    \end{subfigure}
+\end{figure}
 
 \baselineskip= 28pt
 
 \begin{thebibliography}{99}
 
+\bibitem{Alon} Alon N. (2019), The effect of drift change on Skorohod embedded
+distribution with applications in Finance. Master’s Thesis, Tel Aviv
+University
+
 \bibitem{Bassanetal} Bassan, B., Marcus, R., Meilijson, I. and Talpaz, H. (1997). Parameter erstimation in differential equations, using random time transformations. {\em Journal of the Italian Statistical Society}, {\bf 6}, 177--199.
 
-\bibitem{AAA} Grenfell, B.T., Bj{\o}rnstad, O.N. and Filkenst\"{a}dt, B. A. (2002) Dynamics of Measlres epidemics: scaling, noise, determinism and predictability with the TSIR model. {\em Ecological Monographs}, {\bf 72(2)}, 185-–202.
+\bibitem{AAA} Grenfell, B.T., Bj{\o}rnstad, O.N. and Filkenst\"{a}dt, B. A. (2002) Dynamics of Measles epidemics: scaling, noise, determinism and predictability with the TSIR model. {\em Ecological Monographs}, {\bf 72(2)}, 185-–202.
+
+\bibitem{Cuadras} Fortiana, J. and Cuadras, C. M. (1997). A family of matrices, the
+discretized brownian bridge, and distance-based regression. {\em Linear
+Algebra and its Applications}, {\bf 264}, 173–-188.
 
 
 \bibitem{BBB}
@@ -208,3 +420,4 @@ Thanks are due to Ilan Eshel from prompting this study and to Eytan Ruppin, Amit
 \end{thebibliography}
 
 \end{document}
+
