@@ -8,13 +8,14 @@ mainFunction <- function(state_name,
                          only_lower_bounds = F,
                          sweden_data = F,
                          just_data = F,
-                         export_data_for_transformations = F){
+                         export_data_for_transformations = F,
+                         transformed_data = NULL){
   if(export_data_for_transformations){
     covid_data_sets = uploadTransformData(state_name,T)
     return(as_tibble(covid_data_sets))
   }
   else{
-    covid_data_sets = uploadTransformData(state_name) 
+    covid_data_sets = uploadTransformData(state_name,transformed_data) 
   }
   print('Data ready')
   nation_wide_rtt_results <- gridSearchMainFunction(covid_data_sets$transformed_covid_data, 

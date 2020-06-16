@@ -53,6 +53,9 @@ population_list <- list(
 # state <- 'Switzerland'
 # print(state)
 date = '07_06_2020'
-swiss_grid_search_results_07_06_2020 <- mainFunction(state, 50, population_list[[state]], alpha_grid = seq(0.55,0.65, length.out = 40), hhh_grid = c(0.1, 25))
-save(x = swiss_grid_search_results_07_06_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
+state <- 'Israel'
+print(state)
+transformed_state_data = read.csv('Data/Empirical_data_for_transformations/israel_processed_data.csv')
+israel_grid_search_results_07_06_2020 <- mainFunction(state, 61, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25))
+save(x = israel_grid_search_results_07_06_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 

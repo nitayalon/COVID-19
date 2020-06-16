@@ -1,4 +1,6 @@
-uploadTransformData <- function(state_name, just_empirical_data = F){
+uploadTransformData <- function(state_name, 
+                                transformed_state_data = NULL,
+                                just_empirical_data = F){
   states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium','Switzerland'))
   # Original data 
   confirmed_cases <- global_confirmed_cases %>% 
@@ -40,10 +42,15 @@ uploadTransformData <- function(state_name, just_empirical_data = F){
     return(empirical_covid_data)
   }
   # linear regression data
-  index = which(states_list == state_name)
-  transformed_covid_data <- transformed_data[,(3 * index + -2) : (3 * index)]
-  names(transformed_covid_data) <- c('X','Y','VW')
-  
+  if(is.null(transformed_state_data)){
+    index = which(states_list == state_name)
+    transformed_covid_data <- transformed_data[,(3 * index + -2) : (3 * index)]
+    names(transformed_covid_data) <- c('X','Y','VW')
+  }
+  else{
+    transformed_covid_data  = transformed_state_data
+    names(transformed_covid_data) <- c('X','Y','VW')
+  }
   empirical_data = empirical_covid_data %>% 
     as.tibble() %>% 
     mutate(Y = X - (V+W), VW = V+W) %>% 
