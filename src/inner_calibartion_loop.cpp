@@ -58,6 +58,8 @@ List InnerCalibrationLoopRcpp(
     NumericVector y = inner_loop_results(2 , _);
     // random time transformation
     // The events where the pde solution equals to the emphirical values
+    T1(0,0) = sum(x <= X(1));
+    T1(0,1) = sum(vw <= VW(1));
     for(int i=0; i < n; i++)
     {
       T1(i,0) = sum(x<=X(i));
@@ -68,9 +70,15 @@ List InnerCalibrationLoopRcpp(
       T1(i,0) = T1(i,0) + (X[i]-x[T1(i,0)])/(x[T1(i,0)+1]-x[T1(i,0)]);
       T1(i,1) = T1(i,1) + (VW[i]-vw[T1(i,1)])/(vw[T1(i,1)+1]-vw[T1(i,1)]);
     }
-    NumericVector blah = (X-x[T1(_,0)])/(x[T1(_,0)+1]-x[T1(_,0)]);
-    NumericVector x_rtt_correction = pmax(blah, 0);
-    NumericVector vw_rtt_correction = pmax((VW-vw[T1(_,1)])/(vw[T1(_,1)+1]-vw[T1(_,1)]), 0);
+    NumericVector x_rtt_correction(n);
+    NumericVector vw_rtt_correction(n);
+    for(int i=0; i < n; i++)
+    {
+      x_rtt_correction[i] = (X[i] - x[T1(i,0)]) / (x[T1(i,0)+1]-x[T1(i,0)]);
+      vw_rtt_correction[i] = (VW[i] - vw[T1(i,1)]) / (vw[T1(i,1)+1]-vw[T1(i,1)]);
+    }
+    NumericVector x_rtt_correction_updated = pmax(x_rtt_correction, 0);
+    NumericVector vw_rtt_correction_updated = pmax(vw_rtt_correction, 0);
     T1(_,0) = T1(_,0) + x_rtt_correction;
     T1(_,1) = T1(_,1) + vw_rtt_correction; 
     T1=T1 * Del;

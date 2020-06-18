@@ -1,6 +1,7 @@
 uploadTransformData <- function(state_name, 
-                                transformed_state_data = NULL,
-                                just_empirical_data = F){
+                                just_empirical_data = F,
+                                transformed_state_data = NULL
+                                ){
   states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium','Switzerland'))
   # Original data 
   confirmed_cases <- global_confirmed_cases %>% 

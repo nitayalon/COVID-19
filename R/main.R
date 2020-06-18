@@ -18,10 +18,6 @@ mainFunction <- function(state_name,
     covid_data_sets = uploadTransformData(state_name,transformed_data) 
   }
   print('Data ready')
-<<<<<<< HEAD
-  nation_wide_rtt_results <- RunFullCycle(covid_data, starting_day, cut_off_day)
-  return(nation_wide_rtt_results)
-=======
   nation_wide_rtt_results <- gridSearchMainFunction(covid_data_sets$transformed_covid_data, 
                                                     population, 
                                                     starting_day, 
@@ -32,5 +28,4 @@ mainFunction <- function(state_name,
                                                     hhh_grid = hhh_grid)
   return(list(covid_data_sets = covid_data_sets, 
               nation_wide_rtt_results = nation_wide_rtt_results))
->>>>>>> grid_search_for_K_and_alpha
 }

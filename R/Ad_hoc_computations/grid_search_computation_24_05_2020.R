@@ -4,16 +4,11 @@ library(Rcpp)
 library(pbapply)
 source('R/main.R')
 source('R/Ad_hoc_computations/alpha_k_grid_search.R')
-<<<<<<< HEAD
-source('R/calibration_loop.R')
-source('R/inner_calibration_loop.R')
-source('R/data_loader.R')
-=======
-source('R/grid_search_method_helper.R')
 source('R/calibration_loop.R')
 source('R/inner_calibration_loop.R')
 source('R/data_loader.R')
 source('R/load_transformed_data.R')
+source('R/grid_search_method_helper.R')
 source('R/predict_covid_trajectory.R')
 source('R/report_grid_search_greeks.R')
 source('R/Visualization/plot_trajectoires.R')
@@ -57,10 +52,9 @@ population_list <- list(
 # save(x = us_grid_search_results_25_05_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
 # state <- 'Switzerland'
 # print(state)
-date = '07_06_2020'
-state <- 'Israel'
-print(state)
+date = Sys.Date()
+state <- 'Chile'
 transformed_state_data = read.csv('Data/Empirical_data_for_transformations/israel_processed_data.csv')
-israel_grid_search_results_07_06_2020 <- mainFunction(state, 61, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25))
-save(x = israel_grid_search_results_07_06_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
-
+chile_new_data <- mainFunction(state, 61, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25))
+write.csv(x = chile_new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s_%s.csv',state,date))
+dim(transformed_data)

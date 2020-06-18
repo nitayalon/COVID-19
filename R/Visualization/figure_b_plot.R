@@ -62,45 +62,8 @@ plotTrajectoriesB <- function(empirical_nation_data,
   lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$VW[empirical_day_start:length(empirical_x)] / scale_factor, col = 'green', type = 'b', pch=13, lwd = 1, cex = 0.5)
   lines(seq(emprical_starting_day,last_data_date - 1, 'day'), transformed_nation_data$Y[empirical_day_start:length(empirical_x)] / scale_factor, col = 'green', type = 'b', pch=19, lwd = 1, cex = 0.5)
    
-  # lines(days,x_mle_mid[(1:length(x_mle_mid)) %% 100 == 0][1:length(days)] / scale_factor, col = 'red', type = 'b', pch=7, lwd = 1, cex = 0.5)
-  # lines(days,vw_mle_mid[(1:length(vw_mle_mid)) %% 100 == 0][1:length(days)]/ scale_factor, col = 'red', type = 'b', pch=13, lwd = 1, cex = 0.5)
-  # lines(days,y_mle_mid[(1:length(y_mle_mid)) %% 100 == 0][1:length(days)] / scale_factor, col = 'red', type = 'b', pch=19, lwd = 1, cex = 0.5)
-  
-  # lines(days,x_mle_lower[(1:length(x_mle_lower)) %% 100 == 0][1:length(days)] / scale_factor, col = 'green', type = 'b', pch=7, lwd = 1, cex = 0.5)
-  # lines(days,vw_mle_lower[(1:length(vw_mle_lower)) %% 100 == 0][1:length(days)]/ scale_factor, col = 'green', type = 'b', pch=13, lwd = 1, cex = 0.5)
-  # lines(days,y_mle_lower[(1:length(y_mle_lower)) %% 100 == 0][1:length(days)] / scale_factor, col = 'green', type = 'b', pch=19, lwd = 1, cex = 0.5)
-  
   points(current_date, current_data, col = 'black', pch = 3, cex = 1.5)
-  # segments(x0 = 0,
-  #          y0 = max_infection_upper,
-  #          x1 = days[max_infection_upper_index],
-  #          y1 = max_infection_upper,
-  #          col = 'orange',
-  #          lty = 1,
-  #          lwd = 3)
-  # if(plot_maximal_empiric_infection){
-  # segments(x0 = 0,
-  #          y0 = max_infection_actual,
-  #          x1 = days[max_infection_actual_index],
-  #          y1 = max_infection_actual,
-  #          col = 'blue',
-  #          lty = 1,
-  #          lwd = 3)
-  # }
-  # segments(x0 = 0,
-  #          y0 = max_infection_mid, 
-  #          x1 = days[max_infection_mid_index],
-  #          y1 = max_infection_mid,
-  #          col = 'red',
-  #          lty = 1,
-  #          lwd = 3)
-  # segments(x0 = 0,
-  #          y0 = max_infection_lower, 
-  #          x1 = days[max_infection_lower_index],
-  #          y1 = max_infection_lower,
-  #          col = 'green',
-  #          lty = 1,
-  #          lwd = 3)
+
   segments(x0 = last_fitting_date,
            y0 = 0, 
            x1 = last_fitting_date,
