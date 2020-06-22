@@ -46,10 +46,12 @@ List InnerCalibrationLoopRcpp(
                double Alpha,
                double Del,
                int calibration_loops){
-  List results(5);
+  List results(7);
   NumericVector beta_hat(calibration_loops);
   NumericVector gamma_hat(calibration_loops);
   NumericMatrix T1 (n,2);
+  NumericVector x_rtt_correction(n);
+  NumericVector vw_rtt_correction(n);
   
   for(int j = 0; j < calibration_loops; j++){
     NumericMatrix inner_loop_results = innerLoop(n, NumberOfIterations, Beta, Gamma, Del, Alpha, K, X(0), VW(0),Y(0));
@@ -67,20 +69,13 @@ List InnerCalibrationLoopRcpp(
     }
     for(int i=0; i < n; i++)
     {
-      T1(i,0) = T1(i,0) + (X[i]-x[T1(i,0)])/(x[T1(i,0)+1]-x[T1(i,0)]);
-      T1(i,1) = T1(i,1) + (VW[i]-vw[T1(i,1)])/(vw[T1(i,1)+1]-vw[T1(i,1)]);
-    }
-    NumericVector x_rtt_correction(n);
-    NumericVector vw_rtt_correction(n);
-    for(int i=0; i < n; i++)
-    {
       x_rtt_correction[i] = (X[i] - x[T1(i,0)]) / (x[T1(i,0)+1]-x[T1(i,0)]);
       vw_rtt_correction[i] = (VW[i] - vw[T1(i,1)]) / (vw[T1(i,1)+1]-vw[T1(i,1)]);
     }
-    NumericVector x_rtt_correction_updated = pmax(x_rtt_correction, 0);
-    NumericVector vw_rtt_correction_updated = pmax(vw_rtt_correction, 0);
-    T1(_,0) = T1(_,0) + x_rtt_correction;
-    T1(_,1) = T1(_,1) + vw_rtt_correction; 
+    // NumericVector x_rtt_correction_updated = pmax(x_rtt_correction, 0);
+    // NumericVector vw_rtt_correction_updated = pmax(vw_rtt_correction, 0);
+    // T1(_,0) = T1(_,0) + x_rtt_correction;
+    // T1(_,1) = T1(_,1) + vw_rtt_correction; 
     T1=T1 * Del;
     Beta = Beta * T1((n-1), 0) / n;
     Gamma = Gamma * T1((n-1), 1) / n;
@@ -93,6 +88,8 @@ List InnerCalibrationLoopRcpp(
   results[2] = beta_hat;
   results[3] = gamma_hat;
   results[4] = T1;
+  results[5] = x_rtt_correction;
+  results[6] = vw_rtt_correction;
 
   return results;
 }

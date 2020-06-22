@@ -15,7 +15,7 @@ mainFunction <- function(state_name,
     return(as_tibble(covid_data_sets))
   }
   else{
-    covid_data_sets = uploadTransformData(state_name,transformed_data) 
+    covid_data_sets = uploadTransformData(state_name, just_data, transformed_data) 
   }
   print('Data ready')
   nation_wide_rtt_results <- gridSearchMainFunction(covid_data_sets$transformed_covid_data, 
