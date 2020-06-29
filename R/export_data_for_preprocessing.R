@@ -44,17 +44,10 @@ population_list <- list(
   Argentina =    45153114, 
   Switzerland =     8651338 
 ) 
-
-# state <- 'US'
-# print(state)
-# date = '25_05_2020'
-# us_grid_search_results_25_05_2020 <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.2,0.4,length.out = 40), cut_off_day = 125)
-# save(x = us_grid_search_results_25_05_2020, file = sprintf('/home/nitay/COVID-19/R/Ad_hoc_computations/grid_search_results/%s_%s.RData',state,date))
-# state <- 'Switzerland'
-# print(state)
 date = Sys.Date()
-states <- 'Chile'
-transformed_state_data = read.csv('Data/Empirical_data_for_transformations/israel_processed_data.csv')
-chile_new_data <- mainFunction(state, 61, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25))
-write.csv(x = chile_new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s_%s.csv',state,date))
-dim(transformed_data)
+states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
+for(state in states){
+  new_data <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25),export_data_for_transformations = T)
+  write.csv(x = new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/22_06_2020/%s_%s.csv',state,date))
+}
+
