@@ -16,7 +16,7 @@ Rcpp::sourceCpp('src/inner_loop.cpp')
 global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
-transformed_data <- read_csv("/home/nitay/COVID-19/Data/data_from_linear_models.csv",col_names = F)
+transformed_data <- read_csv("/home/nitay/COVID-19/Data/Empirical_data_for_transformations/2020-07-06/all_states_processed.csv",col_names = F)
 population_list <- list(
   US =     330806424 ,   
   Brazil =  212405664 ,
@@ -46,8 +46,14 @@ population_list <- list(
 ) 
 date = Sys.Date()
 states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
-for(state in states){
+for(state in sort(states)){
   new_data <- mainFunction(state, 60, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25),export_data_for_transformations = T)
-  write.csv(x = new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/22_06_2020/%s_%s.csv',state,date))
+  write.csv(x = new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s/%s.csv',date,state))
 }
 
+export_data = dates[1:(length(dates)-2)]
+for(state in sort(states)){
+  state_date = read.csv(sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/2020-07-06/%s.csv',state))
+  export_data = cbind(export_data,state_date[,-1])
+}
+write.csv(x = export_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s/%s.csv',date,'all_states'),row.names = F)

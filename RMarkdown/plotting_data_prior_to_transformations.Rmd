@@ -1,0 +1,24 @@
+---
+title: "Plotting data prior to transformation"
+author: "Nitay Alon"
+date: "7/6/2020"
+output: html_document
+---
+
+```{r import data per state}
+library(ggplot2)
+states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
+dates = seq(as.Date('22/01/2020',format = '%d/%m/%y'),Sys.Date(), 'day')
+```
+```{r plotting the states}
+for(state in states){
+  state_data <- read.csv(sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/2020-07-06/%s.csv',state))
+  state_data$dates = dates[1:(length(dates)-2)]
+  ggplot(state_data, aes(dates)) + 
+    geom_line(aes(y = X, color = 'X')) + 
+    geom_line(aes(y = V, color = 'V')) + 
+    geom_line(aes(y = W, color = 'W')) + 
+    ggtitle(state)
+}
+```
+

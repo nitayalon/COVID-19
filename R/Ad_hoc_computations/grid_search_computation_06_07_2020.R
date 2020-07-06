@@ -45,8 +45,7 @@ population_list <- list(
   Switzerland =     8651338 
 ) 
 date = Sys.Date()
-states <- 'Chile'
-transformed_state_data = read.csv('Data/Empirical_data_for_transformations/israel_processed_data.csv')
+states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
 chile_new_data <- mainFunction(state, 61, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25))
 write.csv(x = chile_new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s_%s.csv',state,date))
 dim(transformed_data)
