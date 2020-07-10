@@ -16,7 +16,8 @@ Rcpp::sourceCpp('src/inner_loop.cpp')
 global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
 global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
-transformed_data <- read_csv("/home/nitay/COVID-19/Data/Empirical_data_for_transformations/2020-07-06/all_states_processed.csv",col_names = F)
+transformed_data <- read_csv("/home/nitay/COVID-19/Data/Empirical_data_for_transformations/2020-07-06/all_states_processed_relevant.csv",col_names = F)
+grid_search_parameters = read_csv("/home/nitay/COVID-19/Data/starting_day_followup_table.csv")
 population_list <- list(
   US =     330806424 ,   
   Brazil =  212405664 ,
@@ -46,6 +47,30 @@ population_list <- list(
 ) 
 date = Sys.Date()
 states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
-chile_new_data <- mainFunction(state, 61, population_list[[state]], alpha_grid = seq(0.5,0.7, length.out = 40), hhh_grid = c(0.1, 25))
-write.csv(x = chile_new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s_%s.csv',state,date))
-dim(transformed_data)
+selected_states <- c('Germany','US','Switzerland','Israel')
+lags = c(0.0000000e+00,1.3000000e+01,0.0000000e+00,0.0000000e+00,8.0000000e+00,1.3000000e+01,1.0000000e+01,1.3000000e+01,9.0000000e+00,9.0000000e+00,1.1000000e+01,1.3000000e+01,1.0000000e+01)
+for(state in selected_states)
+{
+  start_day = grid_search_parameters %>% filter(State == state) %>% select(`Start day`)
+  low_alpha = grid_search_parameters %>% filter(State == state) %>% select(`Lower alpha`)
+  up_alpha = grid_search_parameters %>% filter(State == state) %>% select(`upper alpha`)
+  low_hhh = grid_search_parameters %>% filter(State == state) %>% select(`hhh_low`)
+  up_hhh = grid_search_parameters %>% filter(State == state) %>% select(`hhh_upper`)
+  cut_off_day = grid_search_parameters %>% filter(State == state) %>% select(`End Day`)
+  grid_search_results <- mainFunction(state, start_day$`Start day`, cut_off_day = cut_off_day$`End Day`, population_list[[state]], 
+                                      alpha_grid = seq(low_alpha$`Lower alpha`,up_alpha$`upper alpha`, length.out = 40), hhh_grid = c(low_hhh$hhh_low, up_hhh$hhh_upper),
+                                 lag = lags[which(sort(states) == state)])
+  file_name = sprintf('%s_%s.RData',state,Sys.Date())
+  save(grid_search_results, file = sprintf('Data/Grid_search_results/09_07_2020/%s', file_name))
+  plot(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K, main = state)
+  plot(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha, main = state)
+  K_grid <- c(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[1], grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$k[which.max(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K$llk)], 
+                      grid_search_results$nation_wide_rtt_results$inner_grid_search_results$K_CI[2])
+  alpha_grid <- c(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk > -2.5)],
+                         grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[which.max(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk)], 
+                  grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$alpha[max(which(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_alpha$llk > -2.5))])
+  trajectories <- lapply(1:3, function(i){predictCovidTrajectory(grid_search_results$nation_wide_rtt_results$environment_data, K_grid[i],
+                                                                        alpha_grid[i], alpha_grid = seq(low_alpha$`Lower alpha`,up_alpha$`upper alpha`, length.out = 60))})
+  reportCovidGreeks(trajectories,K_grid, alpha_grid)
+}
+# write.csv(x = chile_new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s_%s.csv',state,date))

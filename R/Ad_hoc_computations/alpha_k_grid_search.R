@@ -7,10 +7,11 @@ gridSearchMainFunction <- function(national_data,
                                    prediction_period = NULL,
                          environment_parameter_list = NULL,
                          only_bounds = F,
-                         just_data = F){
+                         just_data = F,
+                         lag = 0){
   partition_parameter = 100
   del = 1/partition_parameter 
-  environment_data <- DataLoader(national_data,starting_day, cut_off_day)
+  environment_data <- DataLoader(national_data,starting_day, cut_off_day,lag = lag)
   if(just_data){
     return(environment_data)
   }

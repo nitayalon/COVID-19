@@ -9,7 +9,8 @@ mainFunction <- function(state_name,
                          sweden_data = F,
                          just_data = F,
                          export_data_for_transformations = F,
-                         transformed_data = NULL){
+                         transformed_data = NULL,
+                         lag = 0){
   if(export_data_for_transformations){
     covid_data_sets = uploadTransformData(state_name,T)
     return(as_tibble(covid_data_sets))
@@ -25,7 +26,8 @@ mainFunction <- function(state_name,
                                                     only_lower_bounds,
                                                     just_data = just_data, 
                                                     alpha_grid = alpha_grid,
-                                                    hhh_grid = hhh_grid)
+                                                    hhh_grid = hhh_grid,
+                                                    lag = lag)
   return(list(covid_data_sets = covid_data_sets, 
               nation_wide_rtt_results = nation_wide_rtt_results))
 }

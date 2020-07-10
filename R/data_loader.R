@@ -1,12 +1,12 @@
-DataLoader <- function(covid_data, starting_day,cut_off_day= NULL)
+DataLoader <- function(covid_data, starting_day,cut_off_day= NULL, lag = 0)
 {
   min_feasible_date <- which.max(apply(covid_data, 1, function(x){all(x > 0)}))
   ind <- max(starting_day,min_feasible_date)
   if(is.null(cut_off_day)){
-    cutoff <- nrow(covid_data)
+    cutoff <- nrow(covid_data) - lag
   }
   else{
-    cutoff <- min(nrow(covid_data), cut_off_day)
+    cutoff <- min(nrow(covid_data), cut_off_day - lag)
   }
   X = covid_data$X[ind:cutoff]
   VW = covid_data$VW[ind:cutoff]

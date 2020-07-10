@@ -1,8 +1,7 @@
 uploadTransformData <- function(state_name, 
                                 just_empirical_data = F,
-                                transformed_state_data = NULL
-                                ){
-  states_list <- sort(c('US','Brazil','Israel','Italy','Germany','France','Sweden','Chile','Belgium','Switzerland'))
+                                transformed_state_data = NULL){
+  states_list <- sort(c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium'))
   # Original data 
   confirmed_cases <- global_confirmed_cases %>% 
     select(-`Province/State`, -Lat, -Long) %>% 
