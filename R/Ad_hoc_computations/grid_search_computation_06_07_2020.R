@@ -47,7 +47,7 @@ population_list <- list(
 ) 
 date = Sys.Date()
 states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
-selected_states <- c('Germany','US','Switzerland','Israel')
+selected_states <- c('Italy','Germany','US','Switzerland','Israel')
 lags = c(0.0000000e+00,1.3000000e+01,0.0000000e+00,0.0000000e+00,8.0000000e+00,1.3000000e+01,1.0000000e+01,1.3000000e+01,9.0000000e+00,9.0000000e+00,1.1000000e+01,1.3000000e+01,1.0000000e+01)
 for(state in selected_states)
 {
@@ -59,7 +59,9 @@ for(state in selected_states)
   cut_off_day = grid_search_parameters %>% filter(State == state) %>% select(`End Day`)
   grid_search_results <- mainFunction(state, start_day$`Start day`, cut_off_day = cut_off_day$`End Day`, population_list[[state]], 
                                       alpha_grid = seq(low_alpha$`Lower alpha`,up_alpha$`upper alpha`, length.out = 40), hhh_grid = c(low_hhh$hhh_low, up_hhh$hhh_upper),
-                                 lag = lags[which(sort(states) == state)])
+                                 lag = lags[which(sort(states) == state)], export_data_for_transformations = T)
+  write.csv(x = grid_search_results, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/2020-07-11/%s_%s.csv',state,date))
+  next 	
   file_name = sprintf('%s_%s.RData',state,Sys.Date())
   save(grid_search_results, file = sprintf('Data/Grid_search_results/09_07_2020/%s', file_name))
   plot(grid_search_results$nation_wide_rtt_results$inner_grid_search_results$profile_likelihood_K, main = state)
@@ -73,4 +75,3 @@ for(state in selected_states)
                                                                         alpha_grid[i], alpha_grid = seq(low_alpha$`Lower alpha`,up_alpha$`upper alpha`, length.out = 60))})
   reportCovidGreeks(trajectories,K_grid, alpha_grid)
 }
-# write.csv(x = chile_new_data, file = sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s_%s.csv',state,date))
