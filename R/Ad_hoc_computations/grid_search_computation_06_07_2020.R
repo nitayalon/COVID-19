@@ -47,7 +47,7 @@ population_list <- list(
 ) 
 date = Sys.Date()
 states <- c('Chile','Italy','France','Germany','US','Switzerland','Brazil','Peru','Iran','Israel','Turkey','India','Belgium')
-selected_states <- c('Italy','Germany','US','Switzerland','Israel')
+selected_states <- c('Italy','Germany','US','Switzerland','Israel','Iran','Brazil')
 lags = c(0.0000000e+00,1.3000000e+01,0.0000000e+00,0.0000000e+00,8.0000000e+00,1.3000000e+01,1.0000000e+01,1.3000000e+01,9.0000000e+00,9.0000000e+00,1.1000000e+01,1.3000000e+01,1.0000000e+01)
 for(state in selected_states)
 {
