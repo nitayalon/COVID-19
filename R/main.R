@@ -12,7 +12,7 @@ mainFunction <- function(state_name,
                          transformed_data = NULL,
                          lag = 0){
   if(export_data_for_transformations){
-    covid_data_sets = uploadTransformData(state_name,T)
+    covid_data_sets = uploadTransformData(state_name,just_empirical_data = T)
     return(as_tibble(covid_data_sets))
   }
   else{
