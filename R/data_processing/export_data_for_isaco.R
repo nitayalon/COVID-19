@@ -17,7 +17,7 @@ global_confirmed_cases <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse
 global_confirmed_deaths <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
 global_confirmed_recovered <- read_csv("/home/nitay/COVID-19/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
 selected_states <- c('Italy','Germany','US','Switzerland','Israel','Brazil','Iran','Chile')
-us_states <- c('Florida', 'New York','California')
+us_states <- c('Florida', 'New York','California', 'Texas')
 date = Sys.Date()
 dir.create(sprintf('/home/nitay/COVID-19/Data/Empirical_data_for_transformations/%s', date))
 for(state in selected_states)
